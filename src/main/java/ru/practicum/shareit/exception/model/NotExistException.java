@@ -1,4 +1,4 @@
-package ru.practicum.shareit.exceptions;
+package ru.practicum.shareit.exception.model;
 
 public class NotExistException extends RuntimeException {
     public NotExistException(String message) {
