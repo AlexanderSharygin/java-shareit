@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
 @Service
 @Slf4j
 public class UserService {
@@ -40,7 +39,10 @@ public class UserService {
     }
 
     public UserDto create(UserDto userDto) {
-        if (userDto.getEmail() == null) {
+        if (userDto.getEmail() == null || userDto.getEmail().isBlank()) {
+            throw new ValidationException("Email can't be null");
+        }
+        if (userDto.getName() == null || userDto.getName().isBlank()) {
             throw new ValidationException("Email can't be null");
         }
         User user = UserMapper.fromUserDto(userDto);

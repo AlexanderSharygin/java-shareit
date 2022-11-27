@@ -19,12 +19,10 @@ public class Item {
     @NonNull
     private Long id;
 
-    @NotBlank
     @Length(max = 50)
     private String name;
 
-    @NotBlank
-    @Length(max = 200, min = 1)
+    @Length(max = 200)
     private String Description;
 
     private Boolean available;
