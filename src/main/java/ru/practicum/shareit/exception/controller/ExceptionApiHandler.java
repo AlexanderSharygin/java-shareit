@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.exception.model.*;
 
 import java.util.List;
-import java.util.logging.Level;
 
 @RestControllerAdvice
 @Slf4j

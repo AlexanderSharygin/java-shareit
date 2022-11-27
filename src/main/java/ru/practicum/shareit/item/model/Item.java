@@ -7,8 +7,6 @@ import org.hibernate.validator.constraints.Length;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.NotBlank;
-
 /**
  * TODO Sprint add-controllers.
  */

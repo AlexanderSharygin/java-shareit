@@ -3,7 +3,6 @@ package ru.practicum.shareit.user.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
@@ -36,8 +35,8 @@ public class UserController {
 
     @PatchMapping(value = "/users/{id}")
     public UserDto update(@PathVariable("id") Long usersId, @Valid @RequestBody UserDto userDto) {
-         userService.update(usersId, userDto);
-         return userService.findById(usersId);
+        userService.update(usersId, userDto);
+        return userService.findById(usersId);
     }
 
     @DeleteMapping(value = "/users/{id}")
