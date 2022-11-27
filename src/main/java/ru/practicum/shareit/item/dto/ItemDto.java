@@ -18,7 +18,7 @@ public class ItemDto {
     private String name;
 
     @Length(max = 200)
-    private String Description;
+    private String description;
 
     private Boolean available;
 
