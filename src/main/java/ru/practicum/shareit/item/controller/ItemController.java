@@ -29,12 +29,13 @@ public class ItemController {
         if (userId == null) {
             return itemService.findAll();
         } else {
+
             return itemService.findAllForUser(userId);
         }
     }
 
     @GetMapping("/items/{id}")
-    public ItemDto getItemById(@PathVariable("id") Long itemId) {
+    public ItemDto getItemById(@PathVariable("id") long itemId) {
         return itemService.findById(itemId);
     }
 
@@ -48,12 +49,14 @@ public class ItemController {
         User owner = UserMapper.fromUserDto(userService.findById(userId));
         owner.setId(userId);
         itemDto.setOwner(owner);
+
         return itemService.create(itemDto);
     }
 
     @PatchMapping(value = "/items/{id}")
-    public ItemDto update(@Valid @RequestBody ItemDto itemDto, @PathVariable("id") Long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
+    public ItemDto update(@Valid @RequestBody ItemDto itemDto, @PathVariable("id") long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
         itemService.update(itemId, userId, itemDto);
+
         return itemService.findById(itemId);
     }
 }

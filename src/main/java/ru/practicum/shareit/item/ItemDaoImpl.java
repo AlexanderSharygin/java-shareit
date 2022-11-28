@@ -42,7 +42,9 @@ public class ItemDaoImpl implements Dao<Item> {
         if (item.isEmpty()) {
             return Optional.empty();
         }
-        log.info("Найден предмнет с id: {}", item.get().getId());
+        log.info("Найден предмет с id: {}", item.get().getId());
+
+
         return item;
     }
 
@@ -51,7 +53,8 @@ public class ItemDaoImpl implements Dao<Item> {
         item.setId(idCounter);
         items.put(idCounter, item);
         idCounter++;
-        log.info("Добавлена вещь с названием {}", item.getName());
+        log.info("Добавлен предмет с названием {}", item.getName());
+
         return Optional.of(items.get(idCounter - 1));
     }
 
@@ -70,12 +73,14 @@ public class ItemDaoImpl implements Dao<Item> {
             existedItem.setAvailable(item.getAvailable());
         }
         log.info("Обновлен предмет с id {}", item.getId());
+
         return Optional.of(items.get(item.getId()));
     }
 
     @Override
     public void remove(long id) {
-
+        items.remove(id);
+        log.info("Удален предмет с id {}", id);
     }
 }
 

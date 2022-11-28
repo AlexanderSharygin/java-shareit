@@ -33,17 +33,20 @@ public class ItemService {
 
     public List<ItemDto> findAll() {
         List<Item> items = itemDao.findAll();
+
         return items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
     public List<ItemDto> findAllForUser(long userId) {
         List<Item> items = itemDao.findAllForUser(userId);
+
         return items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
     public ItemDto findById(long id) {
         Item item = itemDao.findById(id)
                 .orElseThrow(() -> new NotExistException("Item with id " + id + " not exists in the DB"));
+
         return ItemMapper.toItemDto(item);
     }
 
@@ -52,6 +55,7 @@ public class ItemService {
             return new ArrayList<>();
         }
         List<Item> items = itemDao.findByNameOrDescription(text);
+
         return items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
@@ -65,16 +69,16 @@ public class ItemService {
         if (itemDto.getDescription() == null) {
             throw new ValidationException("Name can't be null");
         }
-
         Item item = ItemMapper.fromItemDto(itemDto);
         Optional<Item> addedItem = itemDao.create(item);
         if (addedItem.isEmpty()) {
             throw new AlreadyExistException("User already exists in the DB");
         }
+
         return ItemMapper.toItemDto(addedItem.get());
     }
 
-    public void update(Long itemId, Long userId, ItemDto itemDto) {
+    public void update(long itemId, long userId, ItemDto itemDto) {
         ItemDto originalItem = findById(itemId);
         if (!originalItem.getOwner().getId().equals(userId)) {
             throw new NotExistException("Wrong owner is specified for the item");
@@ -90,4 +94,8 @@ public class ItemService {
         }
     }
 
+    public void remove(long itemId) {
+        findById(itemId);
+        itemDao.remove(itemId);
+    }
 }

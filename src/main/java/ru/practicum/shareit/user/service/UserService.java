@@ -53,7 +53,7 @@ public class UserService {
         return UserMapper.toUserDto(addedUser.get());
     }
 
-    public void update(Long id, UserDto userDto) {
+    public void update(long id, UserDto userDto) {
         User user = UserMapper.fromUserDto(userDto);
         user.setId(id);
         findById(id);

@@ -7,9 +7,6 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.Instant;
 
-/**
- * TODO Sprint add-bookings.
- */
 @Data
 public class Booking {
     @NonNull
