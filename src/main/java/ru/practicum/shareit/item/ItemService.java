@@ -3,9 +3,8 @@ package ru.practicum.shareit.item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.model.AlreadyExistException;
-import ru.practicum.shareit.exception.model.NotExistException;
-import ru.practicum.shareit.exception.model.ValidationException;
+import ru.practicum.shareit.exception.model.BadRequestException;
+import ru.practicum.shareit.exception.model.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -15,7 +14,6 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,26 +29,26 @@ public class ItemService {
         this.userService = userService;
     }
 
-    public List<ItemDto> findAll() {
+    public List<ItemDto> getAll() {
         List<Item> items = itemDao.findAll();
 
         return items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
-    public List<ItemDto> findAllForUser(long userId) {
+    public List<ItemDto> getAllForUser(long userId) {
         List<Item> items = itemDao.findAllForUser(userId);
 
         return items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
-    public ItemDto findById(long id) {
+    public ItemDto getById(long id) {
         Item item = itemDao.findById(id)
-                .orElseThrow(() -> new NotExistException("Item with id " + id + " not exists in the DB"));
+                .orElseThrow(() -> new NotFoundException("Item with id " + id + " not exists in the DB"));
 
         return ItemMapper.toItemDto(item);
     }
 
-    public List<ItemDto> findByNameOrDescription(String text) {
+    public List<ItemDto> getByNameOrDescription(String text) {
         if (text.isBlank()) {
             return new ArrayList<>();
         }
@@ -59,43 +57,41 @@ public class ItemService {
         return items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
-    public ItemDto create(ItemDto itemDto) {
+    public ItemDto getNewest() {
+        Item item = itemDao.findNewest()
+                .orElseThrow(() -> new NotFoundException("Something went wrong"));
+        return ItemMapper.toItemDto(item);
+    }
+
+    public void create(ItemDto itemDto) {
         if (itemDto.getAvailable() == null) {
-            throw new ValidationException("Available flag can't be null");
+            throw new BadRequestException("Available flag can't be null");
         }
         if (itemDto.getName() == null || itemDto.getName().isBlank()) {
-            throw new ValidationException("Name can't be empty or null");
+            throw new BadRequestException("Name can't be empty or null");
         }
         if (itemDto.getDescription() == null) {
-            throw new ValidationException("Name can't be null");
+            throw new BadRequestException("Name can't be null");
         }
         Item item = ItemMapper.fromItemDto(itemDto);
-        Optional<Item> addedItem = itemDao.create(item);
-        if (addedItem.isEmpty()) {
-            throw new AlreadyExistException("User already exists in the DB");
-        }
-
-        return ItemMapper.toItemDto(addedItem.get());
+        itemDao.create(item);
     }
 
     public void update(long itemId, long userId, ItemDto itemDto) {
-        ItemDto originalItem = findById(itemId);
+        ItemDto originalItem = getById(itemId);
         if (!originalItem.getOwner().getId().equals(userId)) {
-            throw new NotExistException("Wrong owner is specified for the item");
+            throw new NotFoundException("Wrong owner is specified for the item");
         }
-        User owner = UserMapper.fromUserDto(userService.findById(userId));
+        User owner = UserMapper.fromUserDto(userService.getById(userId));
         owner.setId(userId);
         itemDto.setOwner(owner);
         Item item = ItemMapper.fromItemDto(itemDto);
         item.setId(itemId);
-        Optional<Item> updatedItem = itemDao.update(item);
-        if (updatedItem.isEmpty()) {
-            throw new AlreadyExistException("Item with is not exist in the DB");
-        }
+        itemDao.update(item);
     }
 
     public void remove(long itemId) {
-        findById(itemId);
+        getById(itemId);
         itemDao.remove(itemId);
     }
 }

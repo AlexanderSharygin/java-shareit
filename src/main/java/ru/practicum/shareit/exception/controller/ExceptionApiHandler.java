@@ -7,7 +7,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exception.model.*;
+import ru.practicum.shareit.exception.model.BadRequestException;
+import ru.practicum.shareit.exception.model.ConflictException;
+import ru.practicum.shareit.exception.model.ErrorResponse;
+import ru.practicum.shareit.exception.model.NotFoundException;
 
 import java.util.List;
 
@@ -15,26 +18,18 @@ import java.util.List;
 @Slf4j
 public class ExceptionApiHandler {
 
-    @ExceptionHandler(ValidationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse customValidation(ValidationException exception) {
-        log.warn(exception.getMessage());
-
-        return new ErrorResponse(exception.getMessage(), "Validation error");
-    }
-
-    @ExceptionHandler(AlreadyExistException.class)
+    @ExceptionHandler(ConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse entityIsAlreadyExist(AlreadyExistException exception) {
-        log.warn(exception.getMessage());
+    public ErrorResponse entityIsAlreadyExist(ConflictException exception) {
+        log.warn("Entity is already exist", exception.getMessage(), exception.getStackTrace());
 
         return new ErrorResponse(exception.getMessage(), "Entity is already exist!");
     }
 
-    @ExceptionHandler(NotExistException.class)
+    @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse entityIsNotExist(NotExistException exception) {
-        log.warn(exception.getMessage());
+    public ErrorResponse entityIsNotExist(NotFoundException exception) {
+        log.warn("Entity is not found", exception.getMessage(), exception.getStackTrace());
 
         return new ErrorResponse(exception.getMessage(), "Entity is not found!");
     }
@@ -57,7 +52,7 @@ public class ExceptionApiHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleOtherExceptions(final Throwable e) {
-        log.warn(e.getMessage());
+        log.warn("Unknown error", e.getMessage(), e.getStackTrace());
 
         return new ErrorResponse(e.getMessage(), "Unknown error");
     }

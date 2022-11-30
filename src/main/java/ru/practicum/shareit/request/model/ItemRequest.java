@@ -1,8 +1,6 @@
 package ru.practicum.shareit.request.model;
 
 import lombok.Data;
-import lombok.NonNull;
-import org.hibernate.validator.constraints.Length;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.Instant;
@@ -13,20 +11,14 @@ import java.time.Instant;
 @Data
 public class ItemRequest {
 
-    @NonNull
     private Long id;
 
-    @NonNull
     private User owner;
 
-    @NonNull
-    @Length(max = 200, min = 1)
     private String description;
 
-    @NonNull
     private Instant createDateTime;
 
     public ItemRequest() {
     }
-
 }

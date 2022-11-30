@@ -27,36 +27,35 @@ public class ItemController {
     @GetMapping("/items")
     public List<ItemDto> getItems(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
         if (userId == null) {
-            return itemService.findAll();
+            return itemService.getAll();
         } else {
-
-            return itemService.findAllForUser(userId);
+            return itemService.getAllForUser(userId);
         }
     }
 
     @GetMapping("/items/{id}")
     public ItemDto getItemById(@PathVariable("id") long itemId) {
-        return itemService.findById(itemId);
+        return itemService.getById(itemId);
     }
 
     @GetMapping("/items/search")
     public List<ItemDto> getItemsWithSearch(@RequestHeader(value = "X-Sharer-User-Id", required = false) @RequestParam String text) {
-        return itemService.findByNameOrDescription(text);
+        return itemService.getByNameOrDescription(text);
     }
 
     @PostMapping(value = "/items")
     public ItemDto create(@Valid @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") long userId) {
-        User owner = UserMapper.fromUserDto(userService.findById(userId));
+        User owner = UserMapper.fromUserDto(userService.getById(userId));
         owner.setId(userId);
         itemDto.setOwner(owner);
+        itemService.create(itemDto);
+        return itemService.getNewest();
 
-        return itemService.create(itemDto);
     }
 
     @PatchMapping(value = "/items/{id}")
     public ItemDto update(@Valid @RequestBody ItemDto itemDto, @PathVariable("id") long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
         itemService.update(itemId, userId, itemDto);
-
-        return itemService.findById(itemId);
+        return itemService.getById(itemId);
     }
 }

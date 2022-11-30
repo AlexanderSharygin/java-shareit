@@ -9,9 +9,11 @@ public interface Dao<T> {
 
     Optional<T> findById(long id);
 
-    Optional<T> create(T value);
+    Optional<T> findNewest();
 
-    Optional<T> update(T value);
+    void create(T value);
+
+    void update(T value);
 
     void remove(long id);
 
