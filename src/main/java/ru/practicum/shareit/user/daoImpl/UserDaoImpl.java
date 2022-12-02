@@ -53,11 +53,7 @@ public class UserDaoImpl implements Dao<User> {
     public void update(User user) {
         User existedUser = users.values().stream()
                 .filter(k -> k.getId().equals(user.getId()))
-                .findFirst().orElse(null);
-        if (existedUser == null) {
-            throw new NotFoundException("User is not exist in the DB");
-        }
-
+                .findFirst().orElseThrow(()->new NotFoundException("User is not exist in the DB"));
         Optional<User> userWithSameEmail = findUserWithSameEmail(user);
         if (userWithSameEmail.isPresent()) {
             throw new ConflictException("User with the same email already exists!");

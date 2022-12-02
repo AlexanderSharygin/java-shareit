@@ -42,10 +42,8 @@ public class ItemService {
     }
 
     public ItemDto getById(long id) {
-        Item item = itemDao.findById(id)
+        return itemDao.findById(id).map(ItemMapper::toItemDto)
                 .orElseThrow(() -> new NotFoundException("Item with id " + id + " not exists in the DB"));
-
-        return ItemMapper.toItemDto(item);
     }
 
     public List<ItemDto> getByNameOrDescription(String text) {
@@ -58,9 +56,8 @@ public class ItemService {
     }
 
     public ItemDto getNewest() {
-        Item item = itemDao.findNewest()
+        return itemDao.findNewest().map(ItemMapper::toItemDto)
                 .orElseThrow(() -> new NotFoundException("Something went wrong"));
-        return ItemMapper.toItemDto(item);
     }
 
     public void create(ItemDto itemDto) {

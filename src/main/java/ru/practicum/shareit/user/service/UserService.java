@@ -31,15 +31,13 @@ public class UserService {
     }
 
     public UserDto getById(long id) {
-        User user = userDao.findById(id)
+        return userDao.findById(id).map(UserMapper::toUserDto)
                 .orElseThrow(() -> new NotFoundException("User with id " + id + " not exists in the DB"));
-        return UserMapper.toUserDto(user);
     }
 
     public UserDto getNewest() {
-        User user = userDao.findNewest()
+       return userDao.findNewest().map(UserMapper::toUserDto)
                 .orElseThrow(() -> new NotFoundException("Something went wrong"));
-        return UserMapper.toUserDto(user);
     }
 
 
