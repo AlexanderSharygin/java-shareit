@@ -65,7 +65,7 @@ public class ItemDaoImpl implements Dao<Item> {
     public void update(Item item) {
         Item existedItem = items.values().stream()
                 .filter(k -> k.getId().equals(item.getId()))
-                .findFirst().orElseThrow(()->new NotFoundException("Item with id " + item.getId() + " is not found"));
+                .findFirst().orElseThrow(() -> new NotFoundException("Item with id " + item.getId() + " is not found"));
         if (item.getName() != null) {
             existedItem.setName(item.getName());
         }
