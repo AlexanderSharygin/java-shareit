@@ -30,14 +30,12 @@ public class UserController {
 
     @PostMapping(value = "/users")
     public UserDto create(@Valid @RequestBody UserDto userDto) {
-        userService.create(userDto);
-        return userService.getNewest();
+       return userService.create(userDto);
     }
 
     @PatchMapping(value = "/users/{id}")
     public UserDto update(@PathVariable("id") long usersId, @Valid @RequestBody UserDto userDto) {
-        userService.update(usersId, userDto);
-        return userService.getById(usersId);
+        return userService.update(usersId, userDto);
     }
 
     @DeleteMapping(value = "/users/{id}")

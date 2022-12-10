@@ -25,7 +25,7 @@ public class ItemDto {
     @NonNull
     private User owner;
 
-    private ItemRequest request;
+    private ItemRequest itemRequest;
 
     public ItemDto() {
     }

@@ -1,8 +1,8 @@
-package ru.practicum.shareit.user.daoImpl;
+package ru.practicum.shareit.archive;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.dao.Dao;
+import ru.practicum.shareit.archive.dao.Dao;
 import ru.practicum.shareit.exception.model.ConflictException;
 import ru.practicum.shareit.exception.model.NotFoundException;
 import ru.practicum.shareit.user.model.User;
