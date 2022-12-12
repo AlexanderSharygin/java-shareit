@@ -15,7 +15,7 @@ import java.time.Instant;
 @ToString
 @AllArgsConstructor
 @Entity
-@Table(name="bookings")
+@Table(name = "bookings")
 public class Booking {
 
     @Id
@@ -34,11 +34,10 @@ public class Booking {
     private Item item;
 
     @ManyToOne
-    @JoinColumn(name= "booker_id")
+    @JoinColumn(name = "booker_id")
     private User booker;
 
     public Booking() {
-
     }
 }
 

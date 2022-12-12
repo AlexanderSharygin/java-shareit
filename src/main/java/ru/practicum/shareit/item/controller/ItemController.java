@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -20,18 +19,18 @@ public class ItemController {
         this.itemService = itemService;
     }
 
-   @GetMapping("/items")
-    public List<ItemDto> getItems(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
+    @GetMapping("/items")
+    public List<ItemDto> getAllItems(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
         if (userId == null) {
-            return itemService.getAll();
+            return itemService.getAll(userId);
         } else {
             return itemService.getAllForUser(userId);
         }
     }
 
     @GetMapping("/items/{id}")
-    public ItemDto getItemById(@PathVariable("id") long itemId) {
-        return itemService.getById(itemId);
+    public ItemDto getItemById(@PathVariable("id") long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
+        return itemService.getById(itemId, userId);
     }
 
     @GetMapping("/items/search")

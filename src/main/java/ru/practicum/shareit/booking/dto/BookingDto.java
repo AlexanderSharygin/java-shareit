@@ -1,15 +1,11 @@
 package ru.practicum.shareit.booking.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.utils.LocalDateTimeDeserializer;
-import ru.practicum.shareit.utils.LocalDateTimeSerializer;
 
 import java.time.LocalDateTime;
 
@@ -38,6 +34,5 @@ public class BookingDto {
     private Item item;
 
     public BookingDto() {
-
     }
 }

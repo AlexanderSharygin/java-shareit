@@ -1,4 +1,4 @@
-create table users
+create table if not exists users
 (
     id    bigint generated always as identity
         primary key,
@@ -7,10 +7,10 @@ create table users
         unique
 );
 
-alter table users
+alter table if exists users
     owner to postgres;
 
-create table item_requests
+create table if not exists item_requests
 (
     id               bigint generated always as identity
         primary key,
@@ -21,10 +21,10 @@ create table item_requests
     create_date_time timestamp without time zone[] not null
 );
 
-alter table item_requests
+alter table if exists item_requests
     owner to postgres;
 
-create table items
+create table if not exists items
 (
     id              bigint generated always as identity
         primary key,
@@ -40,10 +40,10 @@ create table items
             references item_requests
 );
 
-alter table items
+alter table if exists items
     owner to postgres;
 
-create table bookings
+create table if not exists bookings
 (
     id              bigint generated always as identity
         primary key,
@@ -55,15 +55,13 @@ create table bookings
     booker_id       bigint      not null
         constraint "bookings_bookerId_fkey"
             references users,
-    end_date_time   timestamp   not null,
-    constraint "bookings_itemId_bookerId_key"
-        unique (item_id, booker_id)
+    end_date_time   timestamp   not null
 );
 
-alter table bookings
+alter table if exists bookings
     owner to postgres;
 
-create table comments
+create table if not exists comments
 (
     id         bigint generated always as identity
         primary key,
@@ -76,7 +74,7 @@ create table comments
             on update cascade on delete cascade
 );
 
-alter table comments
+alter table if exists comments
     owner to postgres;
 
 

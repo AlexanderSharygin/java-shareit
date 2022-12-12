@@ -23,6 +23,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/shareit
     username: postgres
     password: admin
+  jackson:
+    time-zone: "UTC"
 
 logging:
   level:

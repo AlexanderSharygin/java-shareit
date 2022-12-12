@@ -3,6 +3,9 @@ package ru.practicum.shareit.item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingInfo;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.model.BadRequestException;
 import ru.practicum.shareit.exception.model.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -12,6 +15,9 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,28 +29,121 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
 
     @Autowired
-    public ItemService(ItemRepository itemRepository, UserRepository userRepository) {
+    public ItemService(ItemRepository itemRepository, UserRepository userRepository, BookingRepository bookingRepository) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
+        this.bookingRepository = bookingRepository;
     }
 
-    public List<ItemDto> getAll() {
+    public List<ItemDto> getAll(long userId) {
         List<Item> items = itemRepository.findAll();
+        List<ItemDto> itemsDtos = new ArrayList<>();
+        for (Item item : items) {
+            ItemDto itemDto = ItemMapper.toItemDto(item);
+            List<Long> ids = List.of(itemDto.getId());
+            List<Booking> itemFutureBookings = bookingRepository.findDistinctByItem_IdInAndStartDateTimeAfterOrderByStartDateTimeDesc(ids, Instant.now());
+            List<Booking> itemPastBookings = bookingRepository.findDistinctByItem_IdInAndEndDateTimeBeforeOrderByStartDateTimeDesc(ids, Instant.now());
 
-        return items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+            if (itemDto.getOwner().getId() == userId) {
+                if (!itemFutureBookings.isEmpty()) {
+                    itemDto.setNextBooking(new BookingInfo(itemFutureBookings.get(0).getId(),
+                            LocalDateTime.ofInstant(itemFutureBookings.get(0).getStartDateTime(), ZoneId.of("UTC")),
+                            itemFutureBookings.get(0).getBooker().getId()));
+                } else {
+                    itemDto.setNextBooking(null);
+                }
+                if (!itemPastBookings.isEmpty()) {
+                    itemDto.setLastBooking(new BookingInfo(itemPastBookings.get(itemPastBookings.size() - 1).getId(),
+                            LocalDateTime.ofInstant(itemFutureBookings.get(
+                                    itemPastBookings.size() - 1).getStartDateTime(), ZoneId.of("UTC")),
+                            itemFutureBookings.get(itemFutureBookings.size() - 1).getBooker().getId()));
+                } else {
+                    itemDto.setLastBooking(null);
+                }
+                itemsDtos.add(0, itemDto);
+            } else {
+                itemDto.setLastBooking(null);
+                itemDto.setNextBooking(null);
+                itemsDtos.add(itemDto);
+            }
+
+        }
+
+        return itemsDtos;
     }
 
     public List<ItemDto> getAllForUser(long userId) {
         List<Item> items = itemRepository.findAllByOwnerId(userId);
 
-        return items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+        List<ItemDto> itemsDtos = new ArrayList<>();
+        for (Item item : items) {
+            ItemDto itemDto = ItemMapper.toItemDto(item);
+            List<Long> ids = List.of(itemDto.getId());
+            List<Booking> itemFutureBookings = bookingRepository.findDistinctByItem_IdInAndStartDateTimeAfterOrderByStartDateTimeDesc(ids, Instant.now());
+            List<Booking> itemPastBookings = bookingRepository.findDistinctByItem_IdInAndEndDateTimeBeforeOrderByStartDateTimeDesc(ids, Instant.now());
+            if (itemDto.getOwner().getId() == userId) {
+                if (!itemFutureBookings.isEmpty()) {
+                    itemDto.setNextBooking(new BookingInfo(itemFutureBookings.get(0).getId(),
+                            LocalDateTime.ofInstant(itemFutureBookings.get(0).getStartDateTime(), ZoneId.of("UTC")),
+                            itemFutureBookings.get(0).getBooker().getId()));
+                } else {
+                    itemDto.setNextBooking(null);
+                }
+                if (!itemPastBookings.isEmpty()) {
+                    itemDto.setLastBooking(new BookingInfo(itemPastBookings.get(
+                            itemPastBookings.size() - 1).getId(),
+                            LocalDateTime.ofInstant(itemFutureBookings.get(
+                                    itemPastBookings.size() - 1).getStartDateTime(), ZoneId.of("UTC")),
+                            itemFutureBookings.get(itemFutureBookings.size() - 1).getBooker().getId()));
+                } else {
+                    itemDto.setLastBooking(null);
+                }
+                if (itemDto.getNextBooking() == null && itemDto.getLastBooking() == null) {
+                    itemsDtos.add(itemDto);
+                } else {
+                    itemsDtos.add(0, itemDto);
+                }
+            } else {
+                itemDto.setLastBooking(null);
+                itemDto.setNextBooking(null);
+                itemsDtos.add(itemDto);
+            }
+
+        }
+        return itemsDtos;
     }
 
-    public ItemDto getById(long id) {
-        return itemRepository.findById(id).map(ItemMapper::toItemDto)
+    public ItemDto getById(long id, long userId) {
+        ItemDto itemDto = itemRepository.findById(id).map(ItemMapper::toItemDto)
                 .orElseThrow(() -> new NotFoundException("Item with id " + id + " not exists in the DB"));
+        List<Long> ids = List.of(itemDto.getId());
+        List<Booking> itemFutureBookings = bookingRepository.findDistinctByItem_IdInAndStartDateTimeAfterOrderByStartDateTimeDesc(ids, Instant.now());
+        List<Booking> itemPastBookings = bookingRepository.findDistinctByItem_IdInAndEndDateTimeBeforeOrderByStartDateTimeDesc(ids, Instant.now());
+
+        if (itemDto.getOwner().getId() == userId) {
+            if (!itemFutureBookings.isEmpty()) {
+                itemDto.setNextBooking(new BookingInfo(itemFutureBookings.get(0).getId(),
+                        LocalDateTime.ofInstant(itemFutureBookings.get(0).getStartDateTime(), ZoneId.of("UTC")),
+                        itemFutureBookings.get(0).getBooker().getId()));
+            } else {
+                itemDto.setNextBooking(null);
+            }
+            if (!itemPastBookings.isEmpty()) {
+                itemDto.setLastBooking(new BookingInfo(itemPastBookings.get(itemPastBookings.size() - 1).getId(),
+                        LocalDateTime.ofInstant(itemFutureBookings.get(
+                                itemPastBookings.size() - 1).getStartDateTime(), ZoneId.of("UTC")),
+                        itemFutureBookings.get(itemFutureBookings.size() - 1).getBooker().getId()));
+            } else {
+                itemDto.setLastBooking(null);
+            }
+        } else {
+            itemDto.setLastBooking(null);
+            itemDto.setNextBooking(null);
+        }
+        return itemDto;
     }
 
     public List<ItemDto> getByNameOrDescription(String text) {
