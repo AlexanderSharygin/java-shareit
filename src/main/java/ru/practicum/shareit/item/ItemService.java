@@ -165,10 +165,10 @@ public class ItemService {
         for (Item item : items) {
             ItemDto itemDto = ItemMapper.toItemDto(item);
             List<Long> ids = List.of(itemDto.getId());
-            List<Booking> futureBookingsForItem = bookingRepository.
-                    findDistinctByItem_IdInAndStartDateTimeAfterOrderByStartDateTimeDesc(ids, Instant.now());
-            List<Booking> pastBookingsForItems = bookingRepository.
-                    findDistinctByItem_IdInAndEndDateTimeBeforeOrderByStartDateTimeDesc(ids, Instant.now());
+            List<Booking> futureBookingsForItem = bookingRepository
+                    .findDistinctByItem_IdInAndStartDateTimeAfterOrderByStartDateTimeDesc(ids, Instant.now());
+            List<Booking> pastBookingsForItems = bookingRepository
+                    .findDistinctByItem_IdInAndEndDateTimeBeforeOrderByStartDateTimeDesc(ids, Instant.now());
             long itemOwnerId = itemDto.getOwner().getId();
             if (itemOwnerId != userId || (futureBookingsForItem.isEmpty() && pastBookingsForItems.isEmpty())) {
                 itemsDto.add(itemDto);
