@@ -63,22 +63,20 @@ alter table if exists bookings
 
 create table if not exists comments
 (
-    id         bigint generated always as identity
+    id        bigint generated always as identity
         primary key,
-    text       varchar(500) not null,
-    "itemId"   bigint       not null
-        references items
+    text      varchar(500) not null,
+    item_id   bigint       not null
+        constraint "comments_itemId_fkey"
+            references items
             on update cascade on delete cascade,
-    "authorId" bigint       not null
-        references users
-            on update cascade on delete cascade
+    author_id bigint       not null
+        constraint "comments_authorId_fkey"
+            references users
+            on update cascade on delete cascade,
+    created   timestamp    not null
 );
 
 alter table if exists comments
     owner to postgres;
-
-
-
-
-
 

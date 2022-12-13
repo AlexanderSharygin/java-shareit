@@ -13,5 +13,7 @@ public class BookingInfo {
 
     private LocalDateTime startDateTime;
 
+    private LocalDateTime endDateTime;
+
     private Long bookerId;
 }
