@@ -51,9 +51,7 @@ public class ItemService {
         for (ItemDto itemDto : result) {
             List<CommentDto> comments = getCommentsForItem(itemDto.getId()).stream()
                     .map(CommentMapper::toCommentDto).collect(Collectors.toList());
-            {
-                itemDto.setComments(comments);
-            }
+            itemDto.setComments(comments);
         }
         return result;
     }
@@ -64,9 +62,7 @@ public class ItemService {
         for (ItemDto itemDto : result) {
             List<CommentDto> comments = getCommentsForItem(itemDto.getId()).stream()
                     .map(CommentMapper::toCommentDto).collect(Collectors.toList());
-            {
-                itemDto.setComments(comments);
-            }
+            itemDto.setComments(comments);
         }
         return result;
     }

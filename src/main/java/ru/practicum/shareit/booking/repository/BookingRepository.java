@@ -21,11 +21,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByBooker_IdOrderByStartDateTimeDesc(Long id);
 
-    List<Booking> findDistinctByItem_IdInAndStartDateTimeAfterOrderByStartDateTimeDesc(Collection<Long> item_id, Instant startDateTime);
+    List<Booking> findDistinctByItem_IdInAndStartDateTimeAfterOrderByStartDateTimeDesc(Collection<Long> itemId, Instant startDateTime);
 
-    List<Booking> findDistinctByItem_IdInAndEndDateTimeBeforeOrderByStartDateTimeDesc(Collection<Long> item_id, Instant startDateTimeInstant);
+    List<Booking> findDistinctByItem_IdInAndEndDateTimeBeforeOrderByStartDateTimeDesc(Collection<Long> itemId, Instant startDateTimeInstant);
 
-    List<Booking> findDistinctByItem_IdInOrderByStartDateTimeDesc(Collection<Long> item_id);
+    List<Booking> findDistinctByItem_IdInOrderByStartDateTimeDesc(Collection<Long> itemId);
 
-    List<Booking> findDistinctByItem_IdInAndStartDateTimeBeforeAndEndDateTimeAfterOrderByStartDateTimeDesc(Collection<Long> item_id, Instant startDateTime, Instant endDateTime);
+    List<Booking> findDistinctByItem_IdInAndStartDateTimeBeforeAndEndDateTimeAfterOrderByStartDateTimeDesc(Collection<Long> itemId, Instant startDateTime, Instant endDateTime);
 }
