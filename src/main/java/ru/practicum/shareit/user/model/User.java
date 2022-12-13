@@ -1,10 +1,11 @@
 package ru.practicum.shareit.user.model;
 
-import lombok.*;
-import org.hibernate.Hibernate;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 /**
  * TODO Sprint add-controllers.

@@ -15,7 +15,7 @@ public enum BookingDtoStatus {
     }
 
     @Override
-    public String toString()  {
+    public String toString() {
         return name;
     }
 }

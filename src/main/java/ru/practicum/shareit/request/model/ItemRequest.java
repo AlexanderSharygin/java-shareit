@@ -15,7 +15,7 @@ import java.time.Instant;
 @Setter
 @ToString
 @Entity
-@Table(name= "item_requests")
+@Table(name = "item_requests")
 public class ItemRequest {
 
     @Id
