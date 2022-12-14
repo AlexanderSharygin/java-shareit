@@ -23,12 +23,15 @@ public class UserService {
     private final UserRepository repository;
 
     public List<UserDto> getAll() {
-        List<User> users = repository.findAll();
-        return users.stream().map(UserMapper::toUserDto).collect(Collectors.toList());
+        return repository.findAll()
+                .stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
     public UserDto getById(long id) {
-        return repository.findById(id).map(UserMapper::toUserDto)
+        return repository.findById(id)
+                .map(UserMapper::toUserDto)
                 .orElseThrow(() -> new NotFoundException("User with id " + id + " not exists in the DB"));
     }
 

@@ -68,10 +68,13 @@ public class BookingService {
     }
 
     public BookingDto getById(long bookingId, long userId) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(
-                () -> new NotFoundException("Booking with id " + bookingId + " not exists in the DB"));
-        Long bookerId = booking.getBooker().getId();
-        Long itemOwnerId = booking.getItem().getOwner().getId();
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Booking with id " + bookingId + " not exists in the DB"));
+        Long bookerId = booking.getBooker()
+                .getId();
+        Long itemOwnerId = booking.getItem()
+                .getOwner()
+                .getId();
         if (bookerId != userId && itemOwnerId != userId) {
             throw new NotFoundException(
                     "User with id " + userId + "is not booker/owner for booking with id " + bookingId);
@@ -81,9 +84,11 @@ public class BookingService {
     }
 
     public BookingDto changeBookingStatus(long bookingId, long userId, boolean isSetApprove) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(
-                () -> new NotFoundException("Booking with id " + bookingId + " not exists in the DB"));
-        Long itemOwnerId = booking.getItem().getOwner().getId();
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Booking with id " + bookingId + " not exists in the DB"));
+        Long itemOwnerId = booking.getItem()
+                .getOwner()
+                .getId();
         if (itemOwnerId != userId) {
             throw new NotFoundException(
                     "User with id " + userId + " is not owner for item from booking with id " + bookingId);
@@ -98,41 +103,43 @@ public class BookingService {
             throw new BadRequestException("Status is already updated for booking with id " + bookingId);
         }
 
-        return BookingMapper.toBookingDto(bookingRepository.findById(bookingId).orElseThrow(
-                () -> new NotFoundException("Booking with id " + bookingId + " not exists in the DB")));
+        return BookingMapper.toBookingDto(bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Booking with id " + bookingId + " not exists in the DB")));
     }
 
     public List<BookingDto> getBookingsForUser(String status, long userId) {
-        userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException("User with id " + userId + " not exists in the DB"));
+        userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with id " + userId + " not exists in the DB"));
         List<BookingDto> result;
         if (status.equals(BookingDtoStatus.WAITING.toString())) {
-            result = bookingRepository.findByBooker_IdAndStatusOrderByStartDateTimeDesc(
-                            userId, BookingStatus.WAITING).stream()
+            result = bookingRepository.findByBooker_IdAndStatusOrderByStartDateTimeDesc(userId, BookingStatus.WAITING)
+                    .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.REJECTED.toString())) {
-            result = bookingRepository.findByBooker_IdAndStatusOrderByStartDateTimeDesc(
-                            userId, BookingStatus.REJECTED).stream()
+            result = bookingRepository.findByBooker_IdAndStatusOrderByStartDateTimeDesc(userId, BookingStatus.REJECTED)
+                    .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.FUTURE.toString())) {
-            result = bookingRepository.findByBooker_IdAndStartDateTimeAfterOrderByStartDateTimeDesc(
-                            userId, Instant.now()).stream()
+            result = bookingRepository.findFutureBookingsByBookerId(userId, Instant.now())
+                    .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.PAST.toString())) {
-            result = bookingRepository.findByBooker_IdAndEndDateTimeBeforeOrderByStartDateTimeDesc(
-                            userId, Instant.now()).stream()
+            result = bookingRepository.findPastBookingsByBookerId(userId, Instant.now())
+                    .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.CURRENT.toString())) {
-            result = bookingRepository.findByBooker_IdAndStartDateTimeBeforeAndEndDateTimeAfterOrderByStartDateTimeDesc(
-                            userId, Instant.now(), Instant.now()).stream()
+            result = bookingRepository.findCurrentBookingsByBookerId(
+                            userId, Instant.now(), Instant.now())
+                    .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.ALL.toString())) {
-            result = bookingRepository.findByBooker_IdOrderByStartDateTimeDesc(userId).stream()
+            result = bookingRepository.findByBooker_IdOrderByStartDateTimeDesc(userId)
+                    .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else {
@@ -143,44 +150,51 @@ public class BookingService {
 
 
     public List<BookingDto> getBookingsForUserItems(String status, long userId) {
-        userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException("User with id " + userId + " not exists in the DB"));
-        List<Long> userItems = itemRepository.findAllByOwnerId(userId).stream()
+        userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with id " + userId + " not exists in the DB"));
+        List<Long> userItems = itemRepository.findAllByOwnerId(userId)
+                .stream()
                 .map(Item::getId)
                 .collect(Collectors.toList());
         List<BookingDto> result;
         if (userItems.isEmpty()) {
             result = new ArrayList<>();
         } else if (status.equals(BookingDtoStatus.WAITING.toString())) {
-            result = bookingRepository.findDistinctByItem_IdInAndStatusOrderByStartDateTimeDesc(
-                            userItems, BookingStatus.WAITING).stream()
+            result = bookingRepository.findDistinctByItem_IdInAndStatus(
+                            userItems, BookingStatus.WAITING)
+                    .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.REJECTED.toString())) {
-            result = bookingRepository.findDistinctByItem_IdInAndStatusOrderByStartDateTimeDesc(
-                            userItems, BookingStatus.REJECTED).stream()
+            result = bookingRepository.findDistinctByItem_IdInAndStatus(
+                            userItems, BookingStatus.REJECTED)
+                    .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.FUTURE.toString())) {
-            result = bookingRepository.findDistinctByItem_IdInAndStartDateTimeAfterOrderByStartDateTimeDesc(
-                            userItems, Instant.now()).stream()
+            result = bookingRepository.findFutureBookingsDistinctByItemsIdList(
+                            userItems, Instant.now())
+                    .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.PAST.toString())) {
-            result = bookingRepository.findDistinctByItem_IdInAndEndDateTimeBeforeOrderByStartDateTimeDesc(
-                            userItems, Instant.now()).stream()
+            result = bookingRepository.findPastBookingsByItemsIdList(
+                            userItems, Instant.now())
+                    .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.CURRENT.toString())) {
 
             result = bookingRepository
-                    .findDistinctByItem_IdInAndStartDateTimeBeforeAndEndDateTimeAfterOrderByStartDateTimeDesc(
-                            userItems, Instant.now(), Instant.now()).stream()
+                    .findCurrentBookingsByItemIdList(
+                            userItems, Instant.now(), Instant.now())
+                    .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
 
         } else if (status.equals(BookingDtoStatus.ALL.toString())) {
-            result = bookingRepository.findDistinctByItem_IdInOrderByStartDateTimeDesc(userItems).stream()
+            result = bookingRepository.findDistinctByItem_IdInOrderByStartDateTimeDesc(userItems)
+                    .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else {

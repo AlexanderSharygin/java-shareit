@@ -83,7 +83,7 @@ public class ItemService {
             return new ArrayList<>();
         }
         List<Item> items = itemRepository
-                .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(text, text);
+                .findAvailableItemsByNameOrDescription(text, text);
 
         return items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
@@ -140,8 +140,12 @@ public class ItemService {
     }
 
     public CommentDto addComment(long itemId, long userId, CommentDto commentDto) {
-        List<Booking> usersBookings = bookingRepository.findByBooker_IdAndEndDateTimeBeforeOrderByStartDateTimeDesc(userId, Instant.now());
-        Booking booking = usersBookings.stream().filter(k -> k.getItem().getId() == itemId).findFirst().orElse(null);
+        List<Booking> usersBookings = bookingRepository.findPastBookingsByBookerId(userId, Instant.now());
+        Booking booking = usersBookings
+                .stream()
+                .filter(k -> k.getItem().getId() == itemId)
+                .findFirst()
+                .orElse(null);
         if (booking == null) {
             throw new BadRequestException(
                     "User with id " + userId + " can't left the comment for booking with id " + itemId);
@@ -166,9 +170,9 @@ public class ItemService {
             ItemDto itemDto = ItemMapper.toItemDto(item);
             List<Long> ids = List.of(itemDto.getId());
             List<Booking> futureBookingsForItem = bookingRepository
-                    .findDistinctByItem_IdInAndStartDateTimeAfterOrderByStartDateTimeDesc(ids, Instant.now());
+                    .findFutureBookingsDistinctByItemsIdList(ids, Instant.now());
             List<Booking> pastBookingsForItems = bookingRepository
-                    .findDistinctByItem_IdInAndEndDateTimeBeforeOrderByStartDateTimeDesc(ids, Instant.now());
+                    .findPastBookingsByItemsIdList(ids, Instant.now());
             long itemOwnerId = itemDto.getOwner().getId();
             if (itemOwnerId != userId || (futureBookingsForItem.isEmpty() && pastBookingsForItems.isEmpty())) {
                 itemsDto.add(itemDto);
