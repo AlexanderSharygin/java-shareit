@@ -1,51 +1,40 @@
 create table if not exists users
 (
-    id    bigint generated always as identity
-        primary key,
-    name  varchar(50),
-    email varchar(200)
-        unique
+    id    BIGINT auto_increment primary key,
+    email CHARACTER VARYING(200) not null unique,
+    name  CHARACTER VARYING(50)
 );
 
-alter table if exists users
-    owner to postgres;
 
 create table if not exists item_requests
 (
-    id               bigint generated always as identity
+    id               BIGINT auto_increment
         primary key,
-    owner_id         bigint                        not null
+    owner_id         bigint                      not null
         constraint owner
             references users,
-    description      varchar(200)                  not null,
-    create_date_time timestamp without time zone[] not null
+    description      varchar(200)                not null,
+    create_date_time timestamp without time zone not null
 );
 
-alter table if exists item_requests
-    owner to postgres;
 
 create table if not exists items
 (
-    id              bigint generated always as identity
+    id              BIGINT auto_increment
         primary key,
     name            varchar(50)  not null,
     description     varchar(200) not null,
     available       boolean      not null,
-    owner_id        bigint       not null
-        constraint owner
-            references users
-            on update cascade on delete cascade,
+    owner_id        bigint       not null,
     item_request_id bigint
         constraint item_request
             references item_requests
 );
 
-alter table if exists items
-    owner to postgres;
 
 create table if not exists bookings
 (
-    id              bigint generated always as identity
+    id              BIGINT auto_increment
         primary key,
     start_date_time timestamp   not null,
     status          varchar(20) not null,
@@ -58,12 +47,9 @@ create table if not exists bookings
     end_date_time   timestamp   not null
 );
 
-alter table if exists bookings
-    owner to postgres;
-
 create table if not exists comments
 (
-    id        bigint generated always as identity
+    id        BIGINT auto_increment
         primary key,
     text      varchar(500) not null,
     item_id   bigint       not null
@@ -77,6 +63,4 @@ create table if not exists comments
     created   timestamp    not null
 );
 
-alter table if exists comments
-    owner to postgres;
 
