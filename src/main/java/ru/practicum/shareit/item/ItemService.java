@@ -48,34 +48,23 @@ public class ItemService {
     public List<ItemDto> getAll() {
         List<Item> items = itemRepository.findAll();
         List<ItemDto> result = items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
-        for (ItemDto itemDto : result) {
-            List<CommentDto> comments = getCommentsForItem(itemDto.getId()).stream()
-                    .map(CommentMapper::toCommentDto).collect(Collectors.toList());
-            itemDto.setComments(comments);
-        }
+        setCommentsForItems(result);
         return result;
     }
 
     public List<ItemDto> getAllForUser(long userId) {
         List<Item> items = itemRepository.findAllByOwnerId(userId);
         List<ItemDto> result = setBookingInfo(items, userId);
-        for (ItemDto itemDto : result) {
-            List<CommentDto> comments = getCommentsForItem(itemDto.getId()).stream()
-                    .map(CommentMapper::toCommentDto).collect(Collectors.toList());
-            itemDto.setComments(comments);
-        }
+        setCommentsForItems(result);
         return result;
     }
 
     public ItemDto getById(long id, long userId) {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Item with id " + id + " not exists in the DB"));
-
-        ItemDto itemDto = setBookingInfo(List.of(item), userId).get(0);
-        List<CommentDto> comments = getCommentsForItem(itemDto.getId()).stream()
-                .map(CommentMapper::toCommentDto).collect(Collectors.toList());
-        itemDto.setComments(comments);
-        return itemDto;
+        ItemDto result = setBookingInfo(List.of(item), userId).get(0);
+        setCommentsForItems(List.of(result));
+        return result;
     }
 
     public List<ItemDto> getByNameOrDescription(String text) {
@@ -160,19 +149,26 @@ public class ItemService {
         return CommentMapper.toCommentDto(commentRepository.save(comment));
     }
 
-    private List<Comment> getCommentsForItem(Long itemId) {
-        return commentRepository.findByItem_Id(itemId);
+    private List<Comment> getCommentsForItems(List<Long> itemsId) {
+        return commentRepository.findCommentsForItems(itemsId);
     }
 
     private List<ItemDto> setBookingInfo(List<Item> items, long userId) {
         List<ItemDto> itemsDto = new ArrayList<>();
+        List<Long> itemIds = items.stream().map(Item::getId).collect(Collectors.toList());
+        List<Booking> futureBookings = bookingRepository.findFutureBookingsDistinctByItemsIdList(itemIds, Instant.now());
+        List<Booking> pastBookings = bookingRepository.findPastBookingsByItemsIdList(itemIds, Instant.now());
         for (Item item : items) {
             ItemDto itemDto = ItemMapper.toItemDto(item);
             List<Long> ids = List.of(itemDto.getId());
-            List<Booking> futureBookingsForItem = bookingRepository
-                    .findFutureBookingsDistinctByItemsIdList(ids, Instant.now());
-            List<Booking> pastBookingsForItems = bookingRepository
-                    .findPastBookingsByItemsIdList(ids, Instant.now());
+            List<Booking> futureBookingsForItem = futureBookings
+                    .stream()
+                    .filter(k -> k.getItem().getId().equals(item.getId()))
+                    .collect(Collectors.toList());
+            List<Booking> pastBookingsForItems = pastBookings
+                    .stream()
+                    .filter(k -> k.getItem().getId().equals(item.getId()))
+                    .collect(Collectors.toList());
             long itemOwnerId = itemDto.getOwner().getId();
             if (itemOwnerId != userId || (futureBookingsForItem.isEmpty() && pastBookingsForItems.isEmpty())) {
                 itemsDto.add(itemDto);
@@ -197,5 +193,17 @@ public class ItemService {
             itemsDto.add(0, itemDto);
         }
         return itemsDto;
+    }
+
+    private void setCommentsForItems(List<ItemDto> items) {
+        List<Comment> comments = getCommentsForItems(items.stream().map(ItemDto::getId).collect(Collectors.toList()));
+        for (ItemDto itemDto : items) {
+            List<CommentDto> itemComments = comments
+                    .stream()
+                    .filter(k -> k.getItem().getId().equals(itemDto.getId()))
+                    .map(CommentMapper::toCommentDto)
+                    .collect(Collectors.toList());
+            itemDto.setComments(itemComments);
+        }
     }
 }
