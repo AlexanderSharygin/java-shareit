@@ -160,7 +160,6 @@ public class ItemService {
         List<Booking> pastBookings = bookingRepository.findPastBookingsByItemsIdList(itemIds, Instant.now());
         for (Item item : items) {
             ItemDto itemDto = ItemMapper.toItemDto(item);
-            List<Long> ids = List.of(itemDto.getId());
             List<Booking> futureBookingsForItem = futureBookings
                     .stream()
                     .filter(k -> k.getItem().getId().equals(item.getId()))
