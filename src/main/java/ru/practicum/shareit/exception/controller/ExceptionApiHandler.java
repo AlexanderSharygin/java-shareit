@@ -57,11 +57,11 @@ public class ExceptionApiHandler {
         return new ErrorResponse(e.getMessage(), "Unknown error");
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIncorrectParameterException(final BadRequestException e) {
         log.warn(e.getMessage());
 
-        return new ErrorResponse(e.getMessage(), "Invalid parameter - " + e.getParameter());
+        return new ErrorResponse(e.getParameter(), "Bad request");
     }
 }
