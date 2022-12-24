@@ -1,6 +1,6 @@
 create table if not exists users
 (
-    id    BIGINT auto_increment primary key,
+    id    BIGINT GENERATED ALWAYS AS IDENTITY primary key,
     email CHARACTER VARYING(200) not null unique,
     name  CHARACTER VARYING(50)
 );
@@ -8,7 +8,7 @@ create table if not exists users
 
 create table if not exists item_requests
 (
-    id               BIGINT auto_increment
+    id               BIGINT GENERATED ALWAYS AS IDENTITY
         primary key,
     owner_id         bigint                      not null
         constraint owner
@@ -20,7 +20,7 @@ create table if not exists item_requests
 
 create table if not exists items
 (
-    id              BIGINT auto_increment
+    id              BIGINT GENERATED ALWAYS AS IDENTITY
         primary key,
     name            varchar(50)  not null,
     description     varchar(200) not null,
@@ -34,7 +34,7 @@ create table if not exists items
 
 create table if not exists bookings
 (
-    id              BIGINT auto_increment
+    id              BIGINT GENERATED ALWAYS AS IDENTITY
         primary key,
     start_date_time timestamp   not null,
     status          varchar(20) not null,
@@ -49,7 +49,7 @@ create table if not exists bookings
 
 create table if not exists comments
 (
-    id        BIGINT auto_increment
+    id        BIGINT GENERATED ALWAYS AS IDENTITY
         primary key,
     text      varchar(500) not null,
     item_id   bigint       not null

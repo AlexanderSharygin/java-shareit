@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NonNull;
 import org.hibernate.validator.constraints.Length;
 import ru.practicum.shareit.booking.model.BookingInfo;
-import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -28,7 +27,7 @@ public class ItemDto {
     @NonNull
     private User owner;
 
-    private ItemRequest itemRequest;
+    private Long requestId;
 
     private BookingInfo lastBooking;
 

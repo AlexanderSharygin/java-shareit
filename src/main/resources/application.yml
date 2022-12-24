@@ -15,22 +15,22 @@ spring:
       ddl-auto: none
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+        dialect: org.hibernate.dialect.PostgreSQL10Dialect
         format_sql: true
         jdbc:
           lob:
             non_contextual_creation: true
 
-  datasource:
-    url: jdbc:h2:file:./db/shareit
-    username: test
-    password: test
-    driverClassName: org.h2.Driver
+    # datasource:
+    # url: jdbc:h2:file:./db/shareit
+    # username: test
+    #  password: test
+    # driverClassName: org.h2.Driver
 
-  #datasource:
-   # url: jdbc:postgresql://localhost:5432/shareit
-   # username: postgres
-  #  password: admin
+  datasource:
+    url: jdbc:postgresql://localhost:5432/shareit
+    username: postgres
+    password: admin
 
 
 

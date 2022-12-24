@@ -21,11 +21,13 @@ public class ItemController {
     }
 
     @GetMapping("/items")
-    public List<ItemDto> getAllItems(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
+    public List<ItemDto> getAllItems(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
+                                     @RequestParam(required = false, defaultValue = "0") int from,
+                                     @RequestParam(required = false, defaultValue = "100") int size) {
         if (userId == null) {
-            return itemService.getAll();
+            return itemService.getAll(from, size);
         } else {
-            return itemService.getAllForUser(userId);
+            return itemService.getAllForUser(userId, from, size);
         }
     }
 
@@ -35,8 +37,11 @@ public class ItemController {
     }
 
     @GetMapping("/items/search")
-    public List<ItemDto> getItemsWithSearch(@RequestHeader(value = "X-Sharer-User-Id", required = false) @RequestParam String text) {
-        return itemService.getByNameOrDescription(text);
+    public List<ItemDto> getItemsWithSearch(@RequestHeader(value = "X-Sharer-User-Id", required = false)
+                                            @RequestParam String text,
+                                            @RequestParam(required = false, defaultValue = "0") int from,
+                                            @RequestParam(required = false, defaultValue = "100") int size) {
+        return itemService.getByNameOrDescription(text, from, size);
     }
 
     @PostMapping(value = "/items")
@@ -45,12 +50,14 @@ public class ItemController {
     }
 
     @PatchMapping(value = "/items/{id}")
-    public ItemDto update(@Valid @RequestBody ItemDto itemDto, @PathVariable("id") long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
+    public ItemDto update(@Valid @RequestBody ItemDto itemDto, @PathVariable("id") long itemId,
+                          @RequestHeader("X-Sharer-User-Id") long userId) {
         return itemService.update(itemId, userId, itemDto);
     }
 
     @PostMapping(value = "/items/{id}/comment")
-    public CommentDto addComment(@Valid @RequestBody CommentDto commentDto, @PathVariable("id") long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
+    public CommentDto addComment(@Valid @RequestBody CommentDto commentDto,
+                                 @PathVariable("id") long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
         return itemService.addComment(itemId, userId, commentDto);
     }
 }
