@@ -79,7 +79,7 @@ public class BookingService {
                 .getId();
         if (bookerId != userId && itemOwnerId != userId) {
             throw new NotFoundException(
-                    "User with id " + userId + "is not booker/owner for booking with id " + bookingId);
+                    "User with id " + userId + " is not booker/owner for booking with id " + bookingId);
         }
 
         return BookingMapper.toBookingDto(booking);
@@ -192,7 +192,6 @@ public class BookingService {
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.CURRENT.toString())) {
-
             result = bookingRepository
                     .findCurrentBookingsByItemIdList(
                             userItems, Instant.now(), Instant.now(), paging)
