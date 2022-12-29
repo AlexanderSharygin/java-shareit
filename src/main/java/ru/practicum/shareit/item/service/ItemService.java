@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,8 +81,7 @@ public class ItemService {
         if (text.isBlank()) {
             return new ArrayList<>();
         }
-        List<Item> items = itemRepository
-                .findAvailableItemsByNameOrDescription(text, text, paging);
+        List<Item> items = itemRepository.findAvailableItemsByNameOrDescription(text, text, paging);
 
         return items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
@@ -95,7 +94,7 @@ public class ItemService {
             throw new BadRequestException("Name can't be empty or null");
         }
         if (itemDto.getDescription() == null) {
-            throw new BadRequestException("Name can't be null");
+            throw new BadRequestException("Description can't be null");
         }
         User owner = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 "User with id " + userId + " not exists in the DB"));
@@ -138,12 +137,6 @@ public class ItemService {
         item.setId(itemId);
 
         return ItemMapper.toItemDto(itemRepository.save(item));
-    }
-
-    public void remove(long itemId) {
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Item with id " + itemId + " not exists in the DB"));
-        itemRepository.delete(item);
     }
 
     public CommentDto addComment(long itemId, long userId, CommentDto commentDto) {
