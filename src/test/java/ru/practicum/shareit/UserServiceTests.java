@@ -1,6 +1,5 @@
 package ru.practicum.shareit;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +16,9 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTests {
@@ -40,17 +42,19 @@ public class UserServiceTests {
         Mockito.when(userRepository.findAll())
                 .thenReturn(List.of(user));
         List<UserDto> expectedResult = List.of(UserMapper.toUserDto(user));
-        Assertions.assertEquals(expectedResult, userService.getAll());
+
+        assertEquals(expectedResult, userService.getAll());
     }
 
     @Test
     public void getByIdWrongUserTest() {
         Mockito.when(userRepository.findById(1L))
                 .thenThrow(new NotFoundException("User with id 1 not exists in the DB"));
-        final NotFoundException exception = Assertions.assertThrows(
+        var exception = assertThrows(
                 NotFoundException.class,
                 () -> userService.getById(1));
-        Assertions.assertEquals("User with id 1 not exists in the DB", exception.getMessage());
+
+        assertEquals("User with id 1 not exists in the DB", exception.getMessage());
     }
 
     @Test
@@ -58,27 +62,30 @@ public class UserServiceTests {
         Mockito.when(userRepository.findById(1L))
                 .thenReturn(Optional.of(user));
         userService.getById(1);
-        Assertions.assertEquals(UserMapper.toUserDto(user), userService.getById(1));
+
+        assertEquals(UserMapper.toUserDto(user), userService.getById(1));
     }
 
     @Test
     public void createEmptyEmailTest() {
         UserDto userDto = UserMapper.toUserDto(user);
         userDto.setEmail("");
-        BadRequestException exception = Assertions.assertThrows(
+        var exception = assertThrows(
                 BadRequestException.class,
                 () -> userService.create(userDto));
-        Assertions.assertEquals("Email can't be null", exception.getParameter());
+
+        assertEquals("Email can't be null", exception.getParameter());
     }
 
     @Test
     public void createEmptyNameTest() {
         UserDto userDto = UserMapper.toUserDto(user);
         userDto.setName("");
-        BadRequestException exception = Assertions.assertThrows(
+        var exception = assertThrows(
                 BadRequestException.class,
                 () -> userService.create(userDto));
-        Assertions.assertEquals("Name can't be null", exception.getParameter());
+
+        assertEquals("Name can't be null", exception.getParameter());
     }
 
     @Test
@@ -86,17 +93,19 @@ public class UserServiceTests {
         Mockito.when(userRepository.save(Mockito.any()))
                 .thenReturn(user);
         UserDto userDto = UserMapper.toUserDto(user);
-        Assertions.assertEquals(userDto.getEmail(), userService.create(userDto).getEmail());
+
+        assertEquals(userDto.getEmail(), userService.create(userDto).getEmail());
     }
 
     @Test
     public void deleteWrongUserIdTest() {
         Mockito.when(userRepository.findById(1L))
                 .thenThrow(new NotFoundException("User with id 1 not exists in the DB"));
-        final NotFoundException exception = Assertions.assertThrows(
+        var exception = assertThrows(
                 NotFoundException.class,
                 () -> userService.delete(1));
-        Assertions.assertEquals("User with id 1 not exists in the DB", exception.getMessage());
+
+        assertEquals("User with id 1 not exists in the DB", exception.getMessage());
     }
 
     @Test
@@ -104,10 +113,11 @@ public class UserServiceTests {
         Mockito.when(userRepository.findById(Mockito.any()))
                 .thenThrow(new NotFoundException("User with id 1 not exists in the DB"));
         UserDto userDto = UserMapper.toUserDto(user);
-        final NotFoundException exception = Assertions.assertThrows(
+        var exception = assertThrows(
                 NotFoundException.class,
                 () -> userService.update(2L, userDto));
-        Assertions.assertEquals("User with id 1 not exists in the DB", exception.getMessage());
+
+        assertEquals("User with id 1 not exists in the DB", exception.getMessage());
     }
 
     @Test
@@ -120,7 +130,8 @@ public class UserServiceTests {
         Mockito.when(userRepository.save(Mockito.any()))
                 .thenReturn(user);
         UserDto result = userService.update(userDto.getId(), userDto);
-        Assertions.assertEquals(result.getName(), "update");
+
+        assertEquals(result.getName(), "update");
     }
 
     @Test
@@ -133,6 +144,7 @@ public class UserServiceTests {
         Mockito.when(userRepository.save(Mockito.any()))
                 .thenReturn(user);
         UserDto result = userService.update(userDto.getId(), userDto);
-        Assertions.assertEquals(result.getEmail(), "update@qqq.cv");
+
+        assertEquals(result.getEmail(), "update@qqq.cv");
     }
 }

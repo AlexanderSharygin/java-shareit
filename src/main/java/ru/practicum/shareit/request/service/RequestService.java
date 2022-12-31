@@ -58,7 +58,7 @@ public class RequestService {
         return ItemRequestMapper.toItemRequestDto(itemRequestRepository.save(itemRequest));
     }
 
-    public List<ItemRequestDto> getIUserRequests(long userId) {
+    public List<ItemRequestDto> getUserRequests(long userId) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 "User with id " + userId + " not exists in the DB"));
         List<ItemRequest> requests = itemRequestRepository.findByOwner_IdOrderByCreateDateTimeDesc(userId);

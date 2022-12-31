@@ -1,6 +1,5 @@
 package ru.practicum.shareit;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +35,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ItemServiceTests {
@@ -79,7 +80,7 @@ public class ItemServiceTests {
         Mockito.when(itemRepository.findAll(paging))
                 .thenReturn(page);
         List<ItemDto> expectedResult = Stream.of(item).map(ItemMapper::toItemDto).collect(Collectors.toList());
-        Assertions.assertEquals(expectedResult, itemService.getAll(1, 1));
+        assertEquals(expectedResult, itemService.getAll(1, 1));
     }
 
     @Test
@@ -88,7 +89,7 @@ public class ItemServiceTests {
         Mockito.when(itemRepository.findByOwner_Id(1L, paging))
                 .thenReturn(List.of(item));
         List<ItemDto> expectedResult = Stream.of(item).map(ItemMapper::toItemDto).collect(Collectors.toList());
-        Assertions.assertEquals(expectedResult, itemService.getAllForUser(1, 1, 1));
+        assertEquals(expectedResult, itemService.getAllForUser(1, 1, 1));
     }
 
     @Test
@@ -96,10 +97,10 @@ public class ItemServiceTests {
         Mockito.when(itemRepository.findById(999L))
                 .thenThrow(new NotFoundException("Item with id 999 not exists in the DB"));
 
-        var exception = Assertions.assertThrows(
+        var exception = assertThrows(
                 NotFoundException.class,
                 () -> itemRepository.findById(999L));
-        Assertions.assertEquals("Item with id 999 not exists in the DB", exception.getMessage());
+        assertEquals("Item with id 999 not exists in the DB", exception.getMessage());
     }
 
     @Test
@@ -108,13 +109,13 @@ public class ItemServiceTests {
                 .thenReturn(Optional.ofNullable(item));
         ItemDto result = itemService.getById(1, 1);
 
-        Assertions.assertEquals(1L, result.getId());
+        assertEquals(1L, result.getId());
     }
 
     @Test
     public void getItemByEmptyNameSuccessTest() {
         List<ItemDto> result = itemService.getByNameOrDescription("", 1, 1);
-        Assertions.assertTrue(result.isEmpty());
+        assertTrue(result.isEmpty());
     }
 
     @Test
@@ -123,44 +124,48 @@ public class ItemServiceTests {
                 .thenReturn(List.of(item));
         List<ItemDto> result = itemService.getByNameOrDescription("Test", 1, 1);
 
-        Assertions.assertEquals(1L, result.get(0).getId());
+        assertEquals(1L, result.get(0).getId());
     }
 
     @Test
     public void createItemWithWrongUserIdExceptionTest() {
         Mockito.when(userRepository.findById(999L))
                 .thenThrow(new NotFoundException("User with id 999 not exists in the DB"));
-        var exception = Assertions.assertThrows(
+        var exception = assertThrows(
                 NotFoundException.class,
                 () -> itemService.create(999, ItemMapper.toItemDto(item)));
-        Assertions.assertEquals("User with id 999 not exists in the DB", exception.getMessage());
+
+        assertEquals("User with id 999 not exists in the DB", exception.getMessage());
     }
 
     @Test
     public void createItemWithEmptyNameExceptionTest() {
         item.setName("");
-        var exception = Assertions.assertThrows(
+        var exception = assertThrows(
                 BadRequestException.class,
                 () -> itemService.create(999, ItemMapper.toItemDto(item)));
-        Assertions.assertEquals("Name can't be empty or null", exception.getParameter());
+
+        assertEquals("Name can't be empty or null", exception.getParameter());
     }
 
     @Test
     public void createItemWithEmptyDescriptionExceptionTest() {
         item.setDescription(null);
-        var exception = Assertions.assertThrows(
+        var exception = assertThrows(
                 BadRequestException.class,
                 () -> itemService.create(999, ItemMapper.toItemDto(item)));
-        Assertions.assertEquals("Description can't be null", exception.getParameter());
+
+        assertEquals("Description can't be null", exception.getParameter());
     }
 
     @Test
     public void createItemWithEmptyAvailableExceptionTest() {
         item.setAvailable(null);
-        var exception = Assertions.assertThrows(
+        var exception = assertThrows(
                 BadRequestException.class,
                 () -> itemService.create(999, ItemMapper.toItemDto(item)));
-        Assertions.assertEquals("Available flag can't be null", exception.getParameter());
+
+        assertEquals("Available flag can't be null", exception.getParameter());
     }
 
     @Test
@@ -171,10 +176,11 @@ public class ItemServiceTests {
                 .thenThrow(new NotFoundException("Item request with id 1 is not found"));
         Mockito.when(userRepository.findById(Mockito.any()))
                 .thenReturn(Optional.of(user));
-        var exception = Assertions.assertThrows(
+        var exception = assertThrows(
                 NotFoundException.class,
                 () -> itemService.create(999, ItemMapper.toItemDto(item)));
-        Assertions.assertEquals("Item request with id 1 is not found", exception.getMessage());
+
+        assertEquals("Item request with id 1 is not found", exception.getMessage());
     }
 
     @Test
@@ -184,7 +190,8 @@ public class ItemServiceTests {
         Mockito.when(itemRepository.save(Mockito.any()))
                 .thenReturn(item);
         ItemDto result = itemService.create(1L, ItemMapper.toItemDto(item));
-        Assertions.assertEquals(result, ItemMapper.toItemDto(item));
+
+        assertEquals(result, ItemMapper.toItemDto(item));
     }
 
 
@@ -192,10 +199,11 @@ public class ItemServiceTests {
     public void updateItemWithWrongItemIdExceptionTest() {
         Mockito.when(itemRepository.findById(Mockito.any()))
                 .thenThrow(new NotFoundException("Item with id 1 not exists in the DB"));
-        var exception = Assertions.assertThrows(
+        var exception = assertThrows(
                 NotFoundException.class,
                 () -> itemService.update(1L, 999, ItemMapper.toItemDto(item)));
-        Assertions.assertEquals("Item with id 1 not exists in the DB", exception.getMessage());
+
+        assertEquals("Item with id 1 not exists in the DB", exception.getMessage());
     }
 
     @Test
@@ -203,10 +211,11 @@ public class ItemServiceTests {
         Mockito.when(itemRepository.findById(Mockito.any()))
                 .thenReturn(Optional.ofNullable(item));
 
-        var exception = Assertions.assertThrows(
+        var exception = assertThrows(
                 NotFoundException.class,
                 () -> itemService.update(1L, 999, ItemMapper.toItemDto(item)));
-        Assertions.assertEquals("Wrong owner is specified for the item", exception.getMessage());
+
+        assertEquals("Wrong owner is specified for the item", exception.getMessage());
     }
 
     @Test
@@ -217,10 +226,11 @@ public class ItemServiceTests {
         Mockito.when(userRepository.findById(1L))
                 .thenThrow(new NotFoundException("User with id 1 not exists in the DB"));
 
-        var exception = Assertions.assertThrows(
+        var exception = assertThrows(
                 NotFoundException.class,
                 () -> itemService.update(1L, 1L, ItemMapper.toItemDto(item)));
-        Assertions.assertEquals("User with id 1 not exists in the DB", exception.getMessage());
+
+        assertEquals("User with id 1 not exists in the DB", exception.getMessage());
     }
 
     @Test
@@ -233,7 +243,8 @@ public class ItemServiceTests {
         Mockito.when(itemRepository.save(Mockito.any()))
                 .thenReturn(item);
         ItemDto result = itemService.update(1L, 1L, ItemMapper.toItemDto(item));
-        Assertions.assertEquals(result, ItemMapper.toItemDto(item));
+
+        assertEquals(result, ItemMapper.toItemDto(item));
     }
 
     @Test
@@ -242,11 +253,12 @@ public class ItemServiceTests {
                 Instant.now().plusSeconds(200), BookingStatus.WAITING, item, user);
         Mockito.when(bookingRepository.findPastBookingsByBookerId(Mockito.any(), Mockito.any()))
                 .thenReturn(List.of(booking));
-        var exception = Assertions.assertThrows(
+        var exception = assertThrows(
                 BadRequestException.class,
                 () -> itemService.addComment(2L, 1L, new CommentDto(1L, "Test",
                         "Test", LocalDateTime.now())));
-        Assertions.assertEquals("User with id 1 can't left the comment for booking with id 2",
+
+        assertEquals("User with id 1 can't left the comment for booking with id 2",
                 exception.getParameter());
     }
 
@@ -259,11 +271,12 @@ public class ItemServiceTests {
         Mockito.when(userRepository.findById(1L))
                 .thenThrow(new NotFoundException("User with id 1 not exists in the DB"));
 
-        var exception = Assertions.assertThrows(
+        var exception = assertThrows(
                 NotFoundException.class,
                 () -> itemService.addComment(1L, 1L, new CommentDto(1L, "Test",
                         "Test", LocalDateTime.now())));
-        Assertions.assertEquals("User with id 1 not exists in the DB",
+
+        assertEquals("User with id 1 not exists in the DB",
                 exception.getMessage());
     }
 
@@ -278,11 +291,11 @@ public class ItemServiceTests {
         Mockito.when(itemRepository.findById(1L))
                 .thenThrow(new NotFoundException("Item with id 1 not exists in the DB"));
 
-        var exception = Assertions.assertThrows(
+        var exception = assertThrows(
                 NotFoundException.class,
                 () -> itemService.addComment(1L, 1L, new CommentDto(1L, "Test",
                         "Test", LocalDateTime.now())));
-        Assertions.assertEquals("Item with id 1 not exists in the DB",
+        assertEquals("Item with id 1 not exists in the DB",
                 exception.getMessage());
     }
 
@@ -301,6 +314,7 @@ public class ItemServiceTests {
         Mockito.when(commentRepository.save(Mockito.any()))
                 .thenReturn(comment);
         var result = itemService.addComment(1L, 1L, CommentMapper.toCommentDto(comment));
-        Assertions.assertEquals(result, CommentMapper.toCommentDto(comment));
+
+        assertEquals(result, CommentMapper.toCommentDto(comment));
     }
 }
