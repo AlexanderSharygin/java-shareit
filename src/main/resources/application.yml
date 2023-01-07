@@ -21,16 +21,16 @@ spring:
           lob:
             non_contextual_creation: true
 
-    # datasource:
-    # url: jdbc:h2:file:./db/shareit
-    # username: test
-    #  password: test
-    # driverClassName: org.h2.Driver
-
   datasource:
-    url: jdbc:postgresql://localhost:5432/shareit
-    username: postgres
-    password: admin
+    url: jdbc:h2:file:./db/shareit
+    username: test
+    password: test
+    driverClassName: org.h2.Driver
+
+  #datasource:
+    #url: jdbc:postgresql://localhost:5432/shareit
+    #username: postgres
+    #password: admin
 
 
 
