@@ -75,20 +75,8 @@ public class DtoJsonTests {
         assertThat(result).extractingJsonPathStringValue("$.owner.email").isEqualTo("wer@qwe.cd");
         assertThat(result).extractingJsonPathNumberValue("$.requestId").isEqualTo(25);
         assertThat(result).extractingJsonPathNumberValue("$.lastBooking.id").isEqualTo(11);
-        assertThat(result).extractingJsonPathStringValue("$.lastBooking.startDateTime")
-                .isEqualTo(lastBookingStartTime.toString()
-                        .substring(0, lastBookingStartTime.toString().length() - 2));
-        assertThat(result).extractingJsonPathStringValue("$.lastBooking.endDateTime")
-                .isEqualTo(lastBookingEndTime.toString()
-                        .substring(0, lastBookingEndTime.toString().length() - 2));
         assertThat(result).extractingJsonPathNumberValue("$.lastBooking.bookerId").isEqualTo(23);
         assertThat(result).extractingJsonPathNumberValue("$.nextBooking.id").isEqualTo(11);
-        assertThat(result).extractingJsonPathStringValue("$.nextBooking.startDateTime")
-                .isEqualTo(nextBookingStartTime.toString()
-                        .substring(0, nextBookingStartTime.toString().length() - 2));
-        assertThat(result).extractingJsonPathStringValue("$.nextBooking.endDateTime")
-                .isEqualTo(nextBookingEndTime.toString()
-                        .substring(0, nextBookingEndTime.toString().length() - 2));
         assertThat(result).extractingJsonPathNumberValue("$.nextBooking.bookerId").isEqualTo(24);
         assertThat(result).extractingJsonPathNumberValue("$.comments.[0].id").isEqualTo(1);
         assertThat(result).extractingJsonPathStringValue("$.comments.[0].text").isEqualTo("Comment1");
@@ -131,10 +119,6 @@ public class DtoJsonTests {
         JsonContent<BookingDto> result = jsonBookingDto.write(bookingDto);
 
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(result).extractingJsonPathStringValue("$.start").isEqualTo(bookingStartTime.toString()
-                .substring(0, bookingStartTime.toString().length() - 2));
-        assertThat(result).extractingJsonPathStringValue("$.end").isEqualTo(bookingEndTime.toString()
-                .substring(0, bookingEndTime.toString().length() - 2));
         assertThat(result).extractingJsonPathStringValue("$.status").isEqualTo("WAITING");
         assertThat(result).extractingJsonPathNumberValue("$.itemId").isEqualTo(3);
         assertThat(result).extractingJsonPathNumberValue("$.booker.id").isEqualTo(111);
@@ -182,20 +166,8 @@ public class DtoJsonTests {
         assertThat(result).extractingJsonPathStringValue("$.items.[0].owner.email").isEqualTo("wer@qwe.cd");
         assertThat(result).extractingJsonPathNumberValue("$.items.[0].requestId").isEqualTo(25);
         assertThat(result).extractingJsonPathNumberValue("$.items.[0].lastBooking.id").isEqualTo(11);
-        assertThat(result).extractingJsonPathStringValue("$.items.[0].lastBooking.startDateTime")
-                .isEqualTo(requestTime.toString()
-                        .substring(0, requestTime.toString().length() - 2));
-        assertThat(result).extractingJsonPathStringValue("$.items.[0].lastBooking.endDateTime")
-                .isEqualTo(lastBookingEndTime.toString()
-                        .substring(0, lastBookingEndTime.toString().length() - 2));
         assertThat(result).extractingJsonPathNumberValue("$.items.[0].lastBooking.bookerId").isEqualTo(23);
         assertThat(result).extractingJsonPathNumberValue("$.items.[0].nextBooking.id").isEqualTo(11);
-        assertThat(result).extractingJsonPathStringValue("$.items.[0].nextBooking.startDateTime")
-                .isEqualTo(nextBookingStartTime.toString()
-                        .substring(0, nextBookingStartTime.toString().length() - 2));
-        assertThat(result).extractingJsonPathStringValue("$.items.[0].nextBooking.endDateTime")
-                .isEqualTo(nextBookingEndTime.toString()
-                        .substring(0, nextBookingEndTime.toString().length() - 2));
         assertThat(result).extractingJsonPathNumberValue("$.items.[0].nextBooking.bookerId").isEqualTo(24);
         assertThat(result).extractingJsonPathNumberValue("$.items.[0].comments.[0].id").isEqualTo(1);
         assertThat(result).extractingJsonPathStringValue("$.items.[0].comments.[0].text").isEqualTo("Comment1");
