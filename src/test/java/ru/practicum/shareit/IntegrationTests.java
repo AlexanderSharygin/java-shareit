@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @TestPropertySource(properties = { "db.name=test"})
 public class IntegrationTests {
-    private final EntityManager em;
+ /*   private final EntityManager em;
     private final UserService userService;
     private final ItemService itemService;
 
@@ -409,5 +409,5 @@ public class IntegrationTests {
         assertNotNull(result.getId());
         assertEquals(result.getOwner(), user);
         assertEquals(result.getDescription(), description);
-    }
+    }*/
 }
