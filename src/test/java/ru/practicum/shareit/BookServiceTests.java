@@ -55,7 +55,7 @@ public class BookServiceTests {
     }
 
     @Test
-    public void createBookingWithWringUserIdTest() {
+    public void createBookingWithWrongUserIdTest() {
         Mockito.when(userRepository.findById(999L))
                 .thenThrow(new NotFoundException("User with id 999 not exists in the DB"));
         var exception = assertThrows(
@@ -63,6 +63,22 @@ public class BookServiceTests {
                 () -> bookService.create(999, null));
 
         assertEquals("User with id 999 not exists in the DB", exception.getMessage());
+    }
+
+    @Test
+    public void createBookingWithWrongItemIdTest() {
+        BookingDto bookingDto = new BookingDto(1L, LocalDateTime.now(), LocalDateTime.now().minusDays(1),
+                BookingStatus.WAITING, 1L,
+                new User(1L, "Name", "email@email.com"), new Item());
+        Mockito.when(userRepository.findById(1L))
+                .thenReturn(Optional.of(user));
+        Mockito.when(itemRepository.findById(1L))
+                .thenThrow(new NotFoundException("Item with id 1 not exists in the DB"));
+        var exception = assertThrows(
+                NotFoundException.class,
+                () -> bookService.create(1L, bookingDto));
+
+        assertEquals("Item with id 1 not exists in the DB", exception.getMessage());
     }
 
     @Test
@@ -349,6 +365,7 @@ public class BookServiceTests {
 
         assertEquals(expectedResult, bookService.getBookingsForUser("WAITING", 1L, 1, 1));
     }
+
 
     @Test
     public void getRejectedBookingsForUserSuccess() {

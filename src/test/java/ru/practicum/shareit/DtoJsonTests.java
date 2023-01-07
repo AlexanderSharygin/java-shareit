@@ -37,6 +37,9 @@ public class DtoJsonTests {
     @Autowired
     private JacksonTester<ItemRequestDto> requestDto;
 
+    @Autowired
+    private JacksonTester<CommentDto> commentDto;
+
     @Test
     void testUserDto() throws Exception {
         UserDto userDto = new UserDto(
@@ -175,5 +178,15 @@ public class DtoJsonTests {
         assertThat(result).extractingJsonPathNumberValue("$.items.[0].comments.[1].id").isEqualTo(2);
         assertThat(result).extractingJsonPathStringValue("$.items.[0].comments.[1].text").isEqualTo("Comment2");
         assertThat(result).extractingJsonPathStringValue("$.items.[0].comments.[1].authorName").isEqualTo("user");
+    }
+
+    @Test
+    void testCommentDtoJson() throws Exception {
+        CommentDto comment = new CommentDto(1L, "Text", "Name", LocalDateTime.now());
+        JsonContent<CommentDto> result = commentDto.write(comment);
+
+        assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
+        assertThat(result).extractingJsonPathStringValue("$.text").isEqualTo("Text");
+        assertThat(result).extractingJsonPathStringValue("$.authorName").isEqualTo("Name");
     }
 }
