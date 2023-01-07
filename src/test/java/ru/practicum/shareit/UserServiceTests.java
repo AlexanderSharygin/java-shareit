@@ -58,7 +58,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void getByIdSucessTest() {
+    public void getByIdSuccessTest() {
         Mockito.when(userRepository.findById(1L))
                 .thenReturn(Optional.of(user));
         userService.getById(1);
