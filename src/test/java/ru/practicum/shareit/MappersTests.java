@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-
 public class MappersTests {
     @Test
     public void userMapperToDtoTest() {
