@@ -1,40 +1,17 @@
 package ru.practicum.shareit;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.maven.surefire.shared.lang3.RandomStringUtils;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.request.service.RequestService;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@TestPropertySource(properties = { "db.name=test"})
+@TestPropertySource(properties = {"db.name=test"})
 public class IntegrationTests {
  /*   private final EntityManager em;
     private final UserService userService;
