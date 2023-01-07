@@ -13,6 +13,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findByOwner_Id(Long id);
 
+    @Query("select i from Item i where i.itemRequest.id in ?1")
     List<Item> findByItemRequest_IdIn(Collection<Long> ids);
 
     @Query("select i from Item i " +

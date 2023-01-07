@@ -1,16 +1,12 @@
 package ru.practicum.shareit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import ru.practicum.shareit.exception.controller.ExceptionApiHandler;
 import ru.practicum.shareit.exception.model.NotFoundException;
 import ru.practicum.shareit.user.controller.UserController;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -26,27 +22,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(controllers = UserController.class)
 public class UserControllerTests {
-    @Mock
+    @MockBean
     private UserService userService;
 
-    @InjectMocks
-    private UserController controller;
+    @Autowired
+    private ObjectMapper mapper;
 
-    private final ObjectMapper mapper = new ObjectMapper();
-
+    @Autowired
     private MockMvc mvc;
 
     private UserDto userDto;
-
-    @BeforeEach
-    void setUp() {
-        mvc = MockMvcBuilders
-                .standaloneSetup(controller)
-                .setControllerAdvice(ExceptionApiHandler.class)
-                .build();
-    }
 
     @Test
     void saveNewUserSuccessTest() throws Exception {

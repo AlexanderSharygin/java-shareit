@@ -9,9 +9,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.exception.controller.ExceptionApiHandler;
 import ru.practicum.shareit.exception.model.BadRequestException;
 import ru.practicum.shareit.exception.model.NotFoundException;
@@ -34,30 +38,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(controllers = ItemController.class)
 public class ItemControllerTests {
-    @Mock
+    @MockBean
     private ItemService itemService;
 
-    @InjectMocks
-    private ItemController controller;
+    @Autowired
+    private ObjectMapper mapper;
 
-    private final ObjectMapper mapper = JsonMapper.builder()
-            .addModule(new JavaTimeModule())
-            .build();
-
-
+    @Autowired
     private MockMvc mvc;
 
     private ItemDto itemDto;
-
-    @BeforeEach
-    void setUp() {
-        mvc = MockMvcBuilders
-                .standaloneSetup(controller)
-                .setControllerAdvice(ExceptionApiHandler.class)
-                .build();
-    }
 
     @Test
     void getAllSuccessTest() throws Exception {
