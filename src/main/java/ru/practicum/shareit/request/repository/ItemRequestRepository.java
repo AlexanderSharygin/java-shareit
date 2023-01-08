@@ -8,7 +8,7 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import java.util.List;
 
 public interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> {
-    @Query("select i from ItemRequest i where i.owner.id <> ?1 order by i.createDateTime DESC")
+    @Query("SELECT i FROM ItemRequest i WHERE i.owner.id <> ?1 ORDER BY i.createDateTime DESC")
     List<ItemRequest> findByOwner_IdNotOrderByCreateDateTimeDesc(Long id, Pageable pageable);
 
     List<ItemRequest> findByOwner_IdOrderByCreateDateTimeDesc(Long id);

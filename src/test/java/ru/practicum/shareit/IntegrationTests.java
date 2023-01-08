@@ -5,6 +5,8 @@ import org.apache.maven.surefire.shared.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.TestPropertySource;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -155,7 +157,8 @@ public class IntegrationTests {
                 .setParameter("email", userDto.getEmail())
                 .getSingleResult();
         long id = user.getId();
-        ItemDto itemDto = new ItemDto(1L, "name", "desc", true, user, null, null, null, new ArrayList<>());
+        ItemDto itemDto = new ItemDto(1L, "name", "desc", true, user, null,
+                null, null, new ArrayList<>());
         itemService.create(id, itemDto);
         TypedQuery<Item> itemQuery = em.createQuery("Select i from Item i where i.name = :name", Item.class);
         Item item = itemQuery
@@ -180,12 +183,15 @@ public class IntegrationTests {
                 .getSingleResult();
         long id = user.getId();
 
-        ItemDto itemDto = new ItemDto(1L, "name", "desc", true, user, null, null, null, new ArrayList<>());
+        ItemDto itemDto = new ItemDto(1L, "name", "desc", true, user, null,
+                null, null, new ArrayList<>());
         itemService.create(id, itemDto);
 
-        ItemDto itemDto2 = new ItemDto(2L, "name2", "desc2", true, user, null, null, null, new ArrayList<>());
+        ItemDto itemDto2 = new ItemDto(2L, "name2", "desc2", true, user,
+                null, null, null, new ArrayList<>());
         itemService.create(id, itemDto2);
-        List<ItemDto> items = itemService.getAll(0, 100);
+        Pageable paging = PageRequest.of(0, 100);
+        List<ItemDto> items = itemService.getAll(paging);
 
         assertTrue(items.size() > 0);
         assertNotNull(items.stream().filter(k -> k.getName().equals("name")).findFirst().orElse(null));
@@ -208,11 +214,14 @@ public class IntegrationTests {
                 .setParameter("email", userDto2.getEmail())
                 .getSingleResult();
 
-        ItemDto itemDto = new ItemDto(1L, "name", "desc", true, user, null, null, null, new ArrayList<>());
+        ItemDto itemDto = new ItemDto(1L, "name", "desc", true, user, null,
+                null, null, new ArrayList<>());
         itemService.create(id, itemDto);
-        ItemDto itemDto2 = new ItemDto(2L, "name2", "desc2", true, user2, null, null, null, new ArrayList<>());
+        ItemDto itemDto2 = new ItemDto(2L, "name2", "desc2", true, user2, null,
+                null, null, new ArrayList<>());
         itemService.create(id, itemDto2);
-        List<ItemDto> items = itemService.getAllForUser(id, 0, 100);
+        Pageable paging = PageRequest.of(1, 1);
+        List<ItemDto> items = itemService.getAllForUser(id, paging);
 
         assertTrue(items.size() > 0);
         for (var item : items) {
@@ -230,11 +239,14 @@ public class IntegrationTests {
                 .getSingleResult();
         long id = user.getId();
 
-        ItemDto itemDto = new ItemDto(1L, "name", "desc", true, user, null, null, null, new ArrayList<>());
+        ItemDto itemDto = new ItemDto(1L, "name", "desc", true, user, null,
+                null, null, new ArrayList<>());
         itemService.create(id, itemDto);
-        ItemDto itemDto2 = new ItemDto(2L, "name2", "desc2", true, user, null, null, null, new ArrayList<>());
+        ItemDto itemDto2 = new ItemDto(2L, "name2", "desc2", true, user, null,
+                null, null, new ArrayList<>());
         itemService.create(id, itemDto2);
-        List<ItemDto> items = itemService.getByNameOrDescription("name", 0, 100);
+        Pageable paging = PageRequest.of(1, 1);
+        List<ItemDto> items = itemService.getByNameOrDescription("name", paging);
 
         assertTrue(items.size() > 0);
         for (var item : items) {
@@ -253,7 +265,8 @@ public class IntegrationTests {
         long id = user.getId();
 
         String name = RandomStringUtils.randomAlphabetic(10);
-        ItemDto itemDto = new ItemDto(1L, name, "desc", true, user, null, null, null, new ArrayList<>());
+        ItemDto itemDto = new ItemDto(1L, name, "desc", true, user, null, null,
+                null, new ArrayList<>());
         itemService.create(id, itemDto);
 
         TypedQuery<Item> queryItem = em.createQuery("Select i from Item i where i.name = :name", Item.class);
@@ -278,7 +291,8 @@ public class IntegrationTests {
         long id = user.getId();
 
         String name = RandomStringUtils.randomAlphabetic(10);
-        ItemDto itemDto = new ItemDto(1L, name, "desc", true, user, null, null, null, new ArrayList<>());
+        ItemDto itemDto = new ItemDto(1L, name, "desc", true, user, null, null,
+                null, new ArrayList<>());
         itemService.create(id, itemDto);
 
         TypedQuery<Item> queryItem = em.createQuery("Select i from Item i where i.name = :name", Item.class);
@@ -316,7 +330,8 @@ public class IntegrationTests {
         long userId2 = user2.getId();
 
         String name = RandomStringUtils.randomAlphabetic(10);
-        ItemDto itemDto = new ItemDto(1L, name, "desc", true, user2, null, null, null, new ArrayList<>());
+        ItemDto itemDto = new ItemDto(1L, name, "desc", true, user2, null, null,
+                null, new ArrayList<>());
         itemService.create(userId2, itemDto);
 
         TypedQuery<Item> queryItem = em.createQuery("Select i from Item i where i.name = :name", Item.class);
@@ -359,7 +374,8 @@ public class IntegrationTests {
         long userId2 = user2.getId();
 
         String name = RandomStringUtils.randomAlphabetic(10);
-        ItemDto itemDto = new ItemDto(1L, name, "desc", true, user2, null, null, null, new ArrayList<>());
+        ItemDto itemDto = new ItemDto(1L, name, "desc", true, user2, null, null,
+                null, new ArrayList<>());
         itemService.create(userId2, itemDto);
 
         TypedQuery<Item> queryItem = em.createQuery("Select i from Item i where i.name = :name", Item.class);
@@ -395,7 +411,8 @@ public class IntegrationTests {
                 .getSingleResult();
         long userId = user.getId();
         String name = RandomStringUtils.randomAlphabetic(10);
-        ItemDto itemDto = new ItemDto(1L, name, "desc", true, user, null, null, null, new ArrayList<>());
+        ItemDto itemDto = new ItemDto(1L, name, "desc", true, user, null, null,
+                null, new ArrayList<>());
         itemService.create(userId, itemDto);
         String description = RandomStringUtils.randomAlphabetic(10);
         ItemRequestDto itemRequestDto = new ItemRequestDto(-1L, user, description, LocalDateTime.now(), List.of(itemDto));

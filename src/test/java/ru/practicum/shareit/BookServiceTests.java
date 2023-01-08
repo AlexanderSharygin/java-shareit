@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
@@ -311,28 +312,13 @@ public class BookServiceTests {
     }
 
     @Test
-    public void getBookingForUserItemsWrongFromPaginationException() {
-        var exception = assertThrows(IllegalArgumentException.class,
-                () -> bookService.getBookingsForUserItems("", 1L, -1, 1));
-
-        assertEquals("Page index must not be less than zero", exception.getMessage());
-    }
-
-    @Test
-    public void getBookingForUserWrongSizePaginationException() {
-        var exception = assertThrows(BadRequestException.class,
-                () -> bookService.getBookingsForUser("", 1L, 1, -1));
-
-        assertEquals("Wrong pagination parameters", exception.getParameter());
-    }
-
-    @Test
     public void getBookingForUserWrongUserException() {
+        Pageable paging = PageRequest.of(0, 100);
         Mockito.when(userRepository.findById(999L))
                 .thenThrow(new NotFoundException("User with id 999 not exists in the DB"));
         var exception = assertThrows(
                 NotFoundException.class,
-                () -> bookService.getBookingsForUser("", 999L, 1, 1));
+                () -> bookService.getBookingsForUser("", 999L, paging));
 
         assertEquals("User with id 999 not exists in the DB", exception.getMessage());
     }
@@ -341,9 +327,10 @@ public class BookServiceTests {
     public void getBookingForUserWrongStatusException() {
         Mockito.when(userRepository.findById(1L))
                 .thenReturn(Optional.of(new User(1L, "Name", "email@email.com")));
+        Pageable paging = PageRequest.of(0, 100);
         var exception = assertThrows(
                 BadRequestException.class,
-                () -> bookService.getBookingsForUser("Wrong", 1L, 1, 1));
+                () -> bookService.getBookingsForUser("Wrong", 1L, paging));
 
         assertEquals("Unknown state: Wrong", exception.getParameter());
     }
@@ -362,8 +349,9 @@ public class BookServiceTests {
                         PageRequest.of(1, 1)))
                 .thenReturn(List.of(booking));
         List<BookingDto> expectedResult = List.of(BookingMapper.toBookingDto(booking));
+        Pageable paging = PageRequest.of(1, 1);
 
-        assertEquals(expectedResult, bookService.getBookingsForUser("WAITING", 1L, 1, 1));
+        assertEquals(expectedResult, bookService.getBookingsForUser("WAITING", 1L, paging));
     }
 
 
@@ -382,7 +370,9 @@ public class BookServiceTests {
                 .thenReturn(List.of(booking));
 
         List<BookingDto> expectedResult = List.of(BookingMapper.toBookingDto(booking));
-        assertEquals(expectedResult, bookService.getBookingsForUser("REJECTED", 1L, 1, 1));
+        Pageable paging = PageRequest.of(1, 1);
+
+        assertEquals(expectedResult, bookService.getBookingsForUser("REJECTED", 1L, paging));
     }
 
     @Test
@@ -399,7 +389,9 @@ public class BookServiceTests {
                 .thenReturn(List.of(booking));
 
         List<BookingDto> expectedResult = List.of(BookingMapper.toBookingDto(booking));
-        assertEquals(expectedResult, bookService.getBookingsForUser("FUTURE", 1L, 1, 1));
+        Pageable paging = PageRequest.of(0, 100);
+
+        assertEquals(expectedResult, bookService.getBookingsForUser("FUTURE", 1L, paging));
     }
 
     @Test
@@ -416,7 +408,8 @@ public class BookServiceTests {
                 .thenReturn(List.of(booking));
 
         List<BookingDto> expectedResult = List.of(BookingMapper.toBookingDto(booking));
-        assertEquals(expectedResult, bookService.getBookingsForUser("PAST", 1L, 1, 1));
+        Pageable paging = PageRequest.of(0, 100);
+        assertEquals(expectedResult, bookService.getBookingsForUser("PAST", 1L, paging));
     }
 
     @Test
@@ -433,7 +426,8 @@ public class BookServiceTests {
                 .thenReturn(List.of(booking));
 
         List<BookingDto> expectedResult = List.of(BookingMapper.toBookingDto(booking));
-        assertEquals(expectedResult, bookService.getBookingsForUser("CURRENT", 1L, 1, 1));
+        Pageable paging = PageRequest.of(0, 100);
+        assertEquals(expectedResult, bookService.getBookingsForUser("CURRENT", 1L, paging));
     }
 
     @Test
@@ -450,44 +444,31 @@ public class BookServiceTests {
                 .thenReturn(List.of(booking));
 
         List<BookingDto> expectedResult = List.of(BookingMapper.toBookingDto(booking));
-        assertEquals(expectedResult, bookService.getBookingsForUser("ALL", 1L, 1, 1));
-    }
-
-    @Test
-    public void getBookingForUserWrongFromPaginationException() {
-        final IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> bookService.getBookingsForUserItems("", 1L, -1, 1));
-        assertEquals("Page index must not be less than zero", exception.getMessage());
-    }
-
-    @Test
-    public void getBookingForUserItemsWrongSizePaginationException() {
-        final IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> bookService.getBookingsForUserItems("", 1L, 1, -1));
-        assertEquals("Page size must not be less than one", exception.getMessage());
+        Pageable paging = PageRequest.of(0, 100);
+        assertEquals(expectedResult, bookService.getBookingsForUser("ALL", 1L, paging));
     }
 
     @Test
     public void getBookingForUserItemsWrongUserException() {
+        Pageable paging = PageRequest.of(0, 100);
         Mockito.when(userRepository.findById(999L))
                 .thenThrow(new NotFoundException("User with id 999 not exists in the DB"));
         final NotFoundException exception = assertThrows(
                 NotFoundException.class,
-                () -> bookService.getBookingsForUserItems("", 999L, 1, 1));
+                () -> bookService.getBookingsForUserItems("", 999L, paging));
         assertEquals("User with id 999 not exists in the DB", exception.getMessage());
     }
 
     @Test
     public void getBookingForUserItemsWrongStatusException() {
+        Pageable paging = PageRequest.of(0, 100);
         Mockito.when(userRepository.findById(1L))
                 .thenReturn(Optional.of(user));
         Mockito.when(itemRepository.findByOwner_Id(1L))
                 .thenReturn(List.of(item2));
         var exception = assertThrows(
                 BadRequestException.class,
-                () -> bookService.getBookingsForUserItems("Wrong", 1L, 1, 1));
+                () -> bookService.getBookingsForUserItems("Wrong", 1L, paging));
 
         assertEquals("Unknown state: Wrong", exception.getParameter());
     }
@@ -507,9 +488,10 @@ public class BookServiceTests {
         Mockito.when(bookingRepository.findDistinctByItem_IdInAndStatus(List.of(1L), BookingStatus.WAITING,
                         PageRequest.of(1, 1)))
                 .thenReturn(List.of(booking));
+        Pageable paging = PageRequest.of(1, 1);
 
         List<BookingDto> expectedResult = List.of(BookingMapper.toBookingDto(booking));
-        assertEquals(expectedResult, bookService.getBookingsForUserItems("WAITING", 1L, 1, 1));
+        assertEquals(expectedResult, bookService.getBookingsForUserItems("WAITING", 1L, paging));
     }
 
     @Test
@@ -529,8 +511,9 @@ public class BookServiceTests {
                 .thenReturn(List.of(booking));
 
         List<BookingDto> expectedResult = List.of(BookingMapper.toBookingDto(booking));
+        Pageable paging = PageRequest.of(0, 100);
 
-        assertEquals(expectedResult, bookService.getBookingsForUserItems("FUTURE", 1L, 1, 1));
+        assertEquals(expectedResult, bookService.getBookingsForUserItems("FUTURE", 1L, paging));
     }
 
 
@@ -550,8 +533,9 @@ public class BookServiceTests {
                         Mockito.any()))
                 .thenReturn(List.of(booking));
         List<BookingDto> expectedResult = List.of(BookingMapper.toBookingDto(booking));
+        Pageable paging = PageRequest.of(0, 100);
 
-        assertEquals(expectedResult, bookService.getBookingsForUserItems("PAST", 1L, 1, 1));
+        assertEquals(expectedResult, bookService.getBookingsForUserItems("PAST", 1L, paging));
     }
 
     @Test
@@ -570,8 +554,9 @@ public class BookServiceTests {
                         Mockito.any()))
                 .thenReturn(List.of(booking));
         List<BookingDto> expectedResult = List.of(BookingMapper.toBookingDto(booking));
+        Pageable paging = PageRequest.of(0, 100);
 
-        assertEquals(expectedResult, bookService.getBookingsForUserItems("CURRENT", 1L, 1, 1));
+        assertEquals(expectedResult, bookService.getBookingsForUserItems("CURRENT", 1L, paging));
     }
 
     @Test
@@ -589,7 +574,8 @@ public class BookServiceTests {
         Mockito.when(bookingRepository.findDistinctByItem_IdInOrderByStartDateTimeDesc(Mockito.any(), Mockito.any()))
                 .thenReturn(List.of(booking));
         List<BookingDto> expectedResult = List.of(BookingMapper.toBookingDto(booking));
+        Pageable paging = PageRequest.of(0, 100);
 
-        assertEquals(expectedResult, bookService.getBookingsForUserItems("ALL", 1L, 1, 1));
+        assertEquals(expectedResult, bookService.getBookingsForUserItems("ALL", 1L, paging));
     }
 }

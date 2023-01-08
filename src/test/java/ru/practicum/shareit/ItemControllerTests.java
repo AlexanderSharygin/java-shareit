@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.exception.model.BadRequestException;
@@ -48,7 +50,8 @@ public class ItemControllerTests {
                 null, null, new ArrayList<>());
         ItemDto itemDto2 = new ItemDto(-1L, "Name2", "Description2", true, user, null,
                 null, null, new ArrayList<>());
-        when(itemService.getAll(0, 100))
+        Pageable paging = PageRequest.of(0, 100);
+        when(itemService.getAll(paging))
                 .thenReturn(List.of(itemDto, itemDto2));
 
         mvc.perform(get("/items")
@@ -100,7 +103,8 @@ public class ItemControllerTests {
         User user = new User(1L, "Name", "email@email.com");
         itemDto = new ItemDto(-1L, "Name", "Description", true, user, null,
                 null, null, new ArrayList<>());
-        when(itemService.getByNameOrDescription("name", 0, 100))
+        Pageable paging = PageRequest.of(0, 100);
+        when(itemService.getByNameOrDescription("name", paging))
                 .thenReturn(List.of(itemDto));
 
         mvc.perform(get("/items/search?text=name")

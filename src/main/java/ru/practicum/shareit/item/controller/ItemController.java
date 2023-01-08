@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -24,10 +26,11 @@ public class ItemController {
     public List<ItemDto> getAllItems(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
                                      @RequestParam(required = false, defaultValue = "0") int from,
                                      @RequestParam(required = false, defaultValue = "100") int size) {
+        Pageable paging = PageRequest.of(from, size);
         if (userId == null) {
-            return itemService.getAll(from, size);
+            return itemService.getAll(paging);
         } else {
-            return itemService.getAllForUser(userId, from, size);
+            return itemService.getAllForUser(userId, paging);
         }
     }
 
@@ -41,7 +44,8 @@ public class ItemController {
                                             @RequestParam String text,
                                             @RequestParam(required = false, defaultValue = "0") int from,
                                             @RequestParam(required = false, defaultValue = "100") int size) {
-        return itemService.getByNameOrDescription(text, from, size);
+        Pageable paging = PageRequest.of(from, size);
+        return itemService.getByNameOrDescription(text, paging);
     }
 
     @PostMapping(value = "/items")

@@ -29,9 +29,7 @@ public class RequestService {
     private final ItemRepository itemRepository;
     private final ItemRequestRepository itemRequestRepository;
 
-
     private final UserRepository userRepository;
-
 
     @Autowired
     public RequestService(UserRepository userRepository,
@@ -39,29 +37,26 @@ public class RequestService {
                           ItemRepository itemRepository) {
 
         this.userRepository = userRepository;
-
         this.itemRequestRepository = itemRequestRepository;
         this.itemRepository = itemRepository;
     }
 
 
     public ItemRequestDto create(ItemRequestDto itemRequestDto, long userId) {
-
-        if (itemRequestDto.getDescription() == null) {
-            throw new BadRequestException("Description can't be null");
-        }
         User owner = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 "User with id " + userId + " not exists in the DB"));
         ItemRequest itemRequest = ItemRequestMapper.fromItemRequestDto(itemRequestDto);
         itemRequest.setOwner(owner);
+        ItemRequest resultRequest = itemRequestRepository.save(itemRequest);
 
-        return ItemRequestMapper.toItemRequestDto(itemRequestRepository.save(itemRequest));
+        return ItemRequestMapper.toItemRequestDto(resultRequest);
     }
 
     public List<ItemRequestDto> getUserRequests(long userId) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 "User with id " + userId + " not exists in the DB"));
         List<ItemRequest> requests = itemRequestRepository.findByOwner_IdOrderByCreateDateTimeDesc(userId);
+
         return setItemsToRequests(requests);
     }
 
@@ -70,6 +65,7 @@ public class RequestService {
                 "User with id " + userId + " not exists in the DB"));
         Pageable paging = PageRequest.of(from, size);
         List<ItemRequest> requests = itemRequestRepository.findByOwner_IdNotOrderByCreateDateTimeDesc(userId, paging);
+
         return setItemsToRequests(requests);
     }
 
@@ -81,8 +77,11 @@ public class RequestService {
                         "Request with id " + requestId + " not exists in the DB"));
         List<Item> items = itemRepository.findByItemRequest_IdIn(List.of(requestId));
         ItemRequestDto requestDto = ItemRequestMapper.toItemRequestDto(request);
-        List<ItemDto> itemsDto = items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+        List<ItemDto> itemsDto = items.stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
         requestDto.setItems(itemsDto);
+
         return requestDto;
     }
 
@@ -101,6 +100,7 @@ public class RequestService {
                     .collect(Collectors.toList()));
             result.add(requestDto);
         }
+
         return result;
     }
 }

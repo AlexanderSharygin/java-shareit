@@ -53,17 +53,6 @@ public class RequestServiceTests {
         requestService = new RequestService(userRepository, itemRequestRepository, itemRepository);
     }
 
-
-    @Test
-    public void createRequestEmptyDescriptionExceptionTest() {
-        itemRequest.setDescription(null);
-        var exception = assertThrows(
-                BadRequestException.class,
-                () -> requestService.create(ItemRequestMapper.toItemRequestDto(itemRequest), 1L));
-
-        assertEquals("Description can't be null", exception.getParameter());
-    }
-
     @Test
     public void createRequestWrongUserExceptionTest() {
         Mockito.when(userRepository.findById(999L))

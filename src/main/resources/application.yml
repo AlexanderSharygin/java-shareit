@@ -27,13 +27,6 @@ spring:
     password: test
     driverClassName: org.h2.Driver
 
-  #datasource:
-    #url: jdbc:postgresql://localhost:5432/shareit
-    #username: postgres
-    #password: admin
-
-
-
 logging:
   level:
     org:

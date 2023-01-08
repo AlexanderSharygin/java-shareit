@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.controller.BookingController;
@@ -51,7 +53,8 @@ public class BookingControllerTests {
                 BookingStatus.WAITING, 1L, user, item);
         BookingDto bookingDto2 = new BookingDto(2L, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
                 BookingStatus.WAITING, 1L, user, item);
-        when(bookingService.getBookingsForUser("ALL", 1L, 0, 100))
+        Pageable paging = PageRequest.of(0, 100);
+        when(bookingService.getBookingsForUser("ALL", 1L, paging))
                 .thenReturn(List.of(bookingDto, bookingDto2));
 
         mvc.perform(get("/bookings")
@@ -65,7 +68,8 @@ public class BookingControllerTests {
 
     @Test
     void getBookingsForUserExceptionTest() throws Exception {
-        when(bookingService.getBookingsForUser("ALL", 1L, 0, 100))
+        Pageable paging = PageRequest.of(0, 100);
+        when(bookingService.getBookingsForUser("ALL", 1L, paging))
                 .thenThrow(new NotFoundException("Item with id 1 not exists in the DB"));
 
         mvc.perform(get("/bookings")
@@ -114,7 +118,8 @@ public class BookingControllerTests {
                 BookingStatus.WAITING, 1L, user, item);
         BookingDto bookingDto2 = new BookingDto(2L, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
                 BookingStatus.WAITING, 1L, user, item);
-        when(bookingService.getBookingsForUserItems("ALL", 1L, 0, 100))
+        Pageable paging = PageRequest.of(0, 100);
+        when(bookingService.getBookingsForUserItems("ALL", 1L, paging))
                 .thenReturn(List.of(bookingDto, bookingDto2));
 
         mvc.perform(get("/bookings/owner")
@@ -128,7 +133,8 @@ public class BookingControllerTests {
 
     @Test
     void getBookingsForUserItemsExceptionTest() throws Exception {
-        when(bookingService.getBookingsForUserItems("ALL", 1L, 0, 100))
+        Pageable paging = PageRequest.of(0, 100);
+        when(bookingService.getBookingsForUserItems("ALL", 1L, paging))
                 .thenThrow(new NotFoundException("Item with id 1 not exists in the DB"));
 
         mvc.perform(get("/bookings/owner")

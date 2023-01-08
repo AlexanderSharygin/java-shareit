@@ -43,7 +43,8 @@ public class ItemService {
     private final CommentRepository commentRepository;
 
     @Autowired
-    public ItemService(ItemRepository itemRepository, UserRepository userRepository, BookingRepository bookingRepository, CommentRepository commentRepository,
+    public ItemService(ItemRepository itemRepository, UserRepository userRepository,
+                       BookingRepository bookingRepository, CommentRepository commentRepository,
                        ItemRequestRepository itemRequestRepository) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
@@ -52,19 +53,19 @@ public class ItemService {
         this.itemRequestRepository = itemRequestRepository;
     }
 
-    public List<ItemDto> getAll(int from, int size) {
-        Pageable paging = PageRequest.of(from, size);
+    public List<ItemDto> getAll(Pageable paging) {
         List<Item> items = itemRepository.findAll(paging).toList();
         List<ItemDto> result = items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
         setCommentsForItems(result);
+
         return result;
     }
 
-    public List<ItemDto> getAllForUser(long userId, int from, int size) {
-        Pageable paging = PageRequest.of(from, size);
+    public List<ItemDto> getAllForUser(long userId,  Pageable paging) {
         List<Item> items = itemRepository.findByOwner_Id(userId, paging);
         List<ItemDto> result = setBookingInfo(items, userId);
         setCommentsForItems(result);
+
         return result;
     }
 
@@ -73,11 +74,12 @@ public class ItemService {
                 .orElseThrow(() -> new NotFoundException("Item with id " + id + " not exists in the DB"));
         ItemDto result = setBookingInfo(List.of(item), userId).get(0);
         setCommentsForItems(List.of(result));
+
         return result;
     }
 
-    public List<ItemDto> getByNameOrDescription(String text, int from, int size) {
-        Pageable paging = PageRequest.of(from, size);
+    public List<ItemDto> getByNameOrDescription(String text, Pageable paging) {
+
         if (text.isBlank()) {
             return new ArrayList<>();
         }
@@ -108,8 +110,9 @@ public class ItemService {
         }
         Item item = ItemMapper.fromItemDto(itemDto);
         item.setItemRequest(itemRequest);
+        Item resultItem =itemRepository.save(item);
 
-        return ItemMapper.toItemDto(itemRepository.save(item));
+        return ItemMapper.toItemDto(resultItem);
     }
 
     public ItemDto update(long itemId, long userId, ItemDto itemDto) {
@@ -157,6 +160,7 @@ public class ItemService {
         Comment comment = CommentMapper.froCommentDto(commentDto);
         comment.setAuthor(user);
         comment.setItem(item);
+
         return CommentMapper.toCommentDto(commentRepository.save(comment));
     }
 
@@ -167,8 +171,10 @@ public class ItemService {
     private List<ItemDto> setBookingInfo(List<Item> items, long userId) {
         List<ItemDto> itemsDto = new ArrayList<>();
         List<Long> itemIds = items.stream().map(Item::getId).collect(Collectors.toList());
-        List<Booking> futureBookings = bookingRepository.findFutureBookingsDistinctByItemsIdList(itemIds, Instant.now());
-        List<Booking> pastBookings = bookingRepository.findPastBookingsByItemsIdList(itemIds, Instant.now());
+        List<Booking> futureBookings = bookingRepository
+                .findFutureBookingsDistinctByItemsIdList(itemIds, Instant.now());
+        List<Booking> pastBookings = bookingRepository
+                .findPastBookingsByItemsIdList(itemIds, Instant.now());
         for (Item item : items) {
             ItemDto itemDto = ItemMapper.toItemDto(item);
             List<Booking> futureBookingsForItem = futureBookings
@@ -202,6 +208,7 @@ public class ItemService {
             }
             itemsDto.add(0, itemDto);
         }
+
         return itemsDto;
     }
 

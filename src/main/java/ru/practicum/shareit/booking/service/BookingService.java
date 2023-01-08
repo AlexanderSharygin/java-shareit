@@ -109,11 +109,7 @@ public class BookingService {
                 .orElseThrow(() -> new NotFoundException("Booking with id " + bookingId + " not exists in the DB")));
     }
 
-    public List<BookingDto> getBookingsForUser(String status, long userId, int from, int size) {
-        if (from < 0 || size < 0) {
-            throw new BadRequestException("Wrong pagination parameters");
-        }
-        Pageable paging = PageRequest.of(from / size, size);
+    public List<BookingDto> getBookingsForUser(String status, long userId,Pageable paging) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User with id " + userId + " not exists in the DB"));
         List<BookingDto> result;
@@ -153,12 +149,12 @@ public class BookingService {
         } else {
             throw new BadRequestException("Unknown state: " + status);
         }
+
         return result;
     }
 
 
-    public List<BookingDto> getBookingsForUserItems(String status, long userId, int from, int size) {
-        Pageable paging = PageRequest.of(from, size);
+    public List<BookingDto> getBookingsForUserItems(String status, long userId,  Pageable paging) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User with id " + userId + " not exists in the DB"));
         List<Long> userItems = itemRepository.findByOwner_Id(userId)
@@ -207,6 +203,7 @@ public class BookingService {
         } else {
             throw new BadRequestException("Unknown state: " + status);
         }
+
         return result;
     }
 }

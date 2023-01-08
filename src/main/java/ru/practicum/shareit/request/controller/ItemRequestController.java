@@ -2,6 +2,7 @@ package ru.practicum.shareit.request.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exception.model.BadRequestException;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.RequestService;
 
@@ -19,7 +20,12 @@ public class ItemRequestController {
     }
 
     @PostMapping(value = "/requests")
-    public ItemRequestDto create(@Valid @RequestBody ItemRequestDto itemRequestDto, @RequestHeader("X-Sharer-User-Id") long userId) {
+    public ItemRequestDto create(@Valid @RequestBody ItemRequestDto itemRequestDto,
+                                 @RequestHeader("X-Sharer-User-Id") long userId) {
+        if (itemRequestDto.getDescription() == null) {
+            throw new BadRequestException("Description can't be null");
+        }
+
         return requestService.create(itemRequestDto, userId);
     }
 

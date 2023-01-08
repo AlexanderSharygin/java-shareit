@@ -13,12 +13,12 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findByOwner_Id(Long id);
 
-    @Query("select i from Item i where i.itemRequest.id in ?1")
+    @Query("SELECT i FROM Item i WHERE i.itemRequest.id IN ?1")
     List<Item> findByItemRequest_IdIn(Collection<Long> ids);
 
-    @Query("select i from Item i " +
-            "where upper(i.name) like upper(concat('%', ?1, '%')) " +
-            "or upper(i.description) like upper(concat('%', ?2, '%')) and i.available = true")
+    @Query("SELECT i FROM Item i " +
+            "WHERE UPPER(i.name) LIKE UPPER(CONCAT('%', ?1, '%')) " +
+            "OR UPPER(i.description) LIKE UPPER(CONCAT('%', ?2, '%')) AND i.available = true")
     List<Item> findAvailableItemsByNameOrDescription(
             String name, String description, Pageable pageable);
 }

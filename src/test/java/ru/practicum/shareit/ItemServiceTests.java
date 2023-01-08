@@ -80,7 +80,7 @@ public class ItemServiceTests {
         Mockito.when(itemRepository.findAll(paging))
                 .thenReturn(page);
         List<ItemDto> expectedResult = Stream.of(item).map(ItemMapper::toItemDto).collect(Collectors.toList());
-        assertEquals(expectedResult, itemService.getAll(1, 1));
+        assertEquals(expectedResult, itemService.getAll(paging));
     }
 
     @Test
@@ -89,7 +89,7 @@ public class ItemServiceTests {
         Mockito.when(itemRepository.findByOwner_Id(1L, paging))
                 .thenReturn(List.of(item));
         List<ItemDto> expectedResult = Stream.of(item).map(ItemMapper::toItemDto).collect(Collectors.toList());
-        assertEquals(expectedResult, itemService.getAllForUser(1, 1, 1));
+        assertEquals(expectedResult, itemService.getAllForUser(1, paging));
     }
 
     @Test
@@ -114,15 +114,17 @@ public class ItemServiceTests {
 
     @Test
     public void getItemByEmptyNameSuccessTest() {
-        List<ItemDto> result = itemService.getByNameOrDescription("", 1, 1);
+        Pageable paging = PageRequest.of(1, 1);
+        List<ItemDto> result = itemService.getByNameOrDescription("", paging);
         assertTrue(result.isEmpty());
     }
 
     @Test
     public void getItemByNameSuccessTest() {
+        Pageable paging = PageRequest.of(1, 1);
         Mockito.when(itemRepository.findAvailableItemsByNameOrDescription(Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(List.of(item));
-        List<ItemDto> result = itemService.getByNameOrDescription("Test", 1, 1);
+        List<ItemDto> result = itemService.getByNameOrDescription("Test", paging);
 
         assertEquals(1L, result.get(0).getId());
     }
