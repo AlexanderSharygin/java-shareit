@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
@@ -61,7 +60,7 @@ public class ItemService {
         return result;
     }
 
-    public List<ItemDto> getAllForUser(long userId,  Pageable paging) {
+    public List<ItemDto> getAllForUser(long userId, Pageable paging) {
         List<Item> items = itemRepository.findByOwner_Id(userId, paging);
         List<ItemDto> result = setBookingInfo(items, userId);
         setCommentsForItems(result);
@@ -110,7 +109,7 @@ public class ItemService {
         }
         Item item = ItemMapper.fromItemDto(itemDto);
         item.setItemRequest(itemRequest);
-        Item resultItem =itemRepository.save(item);
+        Item resultItem = itemRepository.save(item);
 
         return ItemMapper.toItemDto(resultItem);
     }

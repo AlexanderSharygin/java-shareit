@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@TestPropertySource(properties = { "db.name=test"})
+@TestPropertySource(properties = {"db.name=test"})
 public class IntegrationTests {
     private final EntityManager em;
     private final UserService userService;

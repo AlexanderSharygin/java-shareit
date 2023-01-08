@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -109,7 +108,7 @@ public class BookingService {
                 .orElseThrow(() -> new NotFoundException("Booking with id " + bookingId + " not exists in the DB")));
     }
 
-    public List<BookingDto> getBookingsForUser(String status, long userId,Pageable paging) {
+    public List<BookingDto> getBookingsForUser(String status, long userId, Pageable paging) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User with id " + userId + " not exists in the DB"));
         List<BookingDto> result;
@@ -154,7 +153,7 @@ public class BookingService {
     }
 
 
-    public List<BookingDto> getBookingsForUserItems(String status, long userId,  Pageable paging) {
+    public List<BookingDto> getBookingsForUserItems(String status, long userId, Pageable paging) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User with id " + userId + " not exists in the DB"));
         List<Long> userItems = itemRepository.findByOwner_Id(userId)
