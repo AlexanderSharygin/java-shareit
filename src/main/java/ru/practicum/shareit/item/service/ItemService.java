@@ -1,7 +1,8 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingInfo;
@@ -16,6 +17,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -30,6 +33,7 @@ import java.util.stream.Collectors;
 @Slf4j
 
 public class ItemService {
+    private final ItemRequestRepository itemRequestRepository;
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
@@ -38,24 +42,29 @@ public class ItemService {
     private final CommentRepository commentRepository;
 
     @Autowired
-    public ItemService(ItemRepository itemRepository, UserRepository userRepository, BookingRepository bookingRepository, CommentRepository commentRepository) {
+    public ItemService(ItemRepository itemRepository, UserRepository userRepository,
+                       BookingRepository bookingRepository, CommentRepository commentRepository,
+                       ItemRequestRepository itemRequestRepository) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.commentRepository = commentRepository;
+        this.itemRequestRepository = itemRequestRepository;
     }
 
-    public List<ItemDto> getAll() {
-        List<Item> items = itemRepository.findAll();
+    public List<ItemDto> getAll(Pageable paging) {
+        List<Item> items = itemRepository.findAll(paging).toList();
         List<ItemDto> result = items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
         setCommentsForItems(result);
+
         return result;
     }
 
-    public List<ItemDto> getAllForUser(long userId) {
-        List<Item> items = itemRepository.findAllByOwnerId(userId);
+    public List<ItemDto> getAllForUser(long userId, Pageable paging) {
+        List<Item> items = itemRepository.findByOwner_Id(userId, paging);
         List<ItemDto> result = setBookingInfo(items, userId);
         setCommentsForItems(result);
+
         return result;
     }
 
@@ -64,15 +73,16 @@ public class ItemService {
                 .orElseThrow(() -> new NotFoundException("Item with id " + id + " not exists in the DB"));
         ItemDto result = setBookingInfo(List.of(item), userId).get(0);
         setCommentsForItems(List.of(result));
+
         return result;
     }
 
-    public List<ItemDto> getByNameOrDescription(String text) {
+    public List<ItemDto> getByNameOrDescription(String text, Pageable paging) {
+
         if (text.isBlank()) {
             return new ArrayList<>();
         }
-        List<Item> items = itemRepository
-                .findAvailableItemsByNameOrDescription(text, text);
+        List<Item> items = itemRepository.findAvailableItemsByNameOrDescription(text, text, paging);
 
         return items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
@@ -85,14 +95,23 @@ public class ItemService {
             throw new BadRequestException("Name can't be empty or null");
         }
         if (itemDto.getDescription() == null) {
-            throw new BadRequestException("Name can't be null");
+            throw new BadRequestException("Description can't be null");
         }
         User owner = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 "User with id " + userId + " not exists in the DB"));
         itemDto.setOwner(owner);
-        Item item = ItemMapper.fromItemDto(itemDto);
+        ItemRequest itemRequest = null;
+        if (itemDto.getRequestId() != null) {
+            long requestId = itemDto.getRequestId();
+            itemRequest = itemRequestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new NotFoundException("Item request with id " + requestId + "is not found"));
 
-        return ItemMapper.toItemDto(itemRepository.save(item));
+        }
+        Item item = ItemMapper.fromItemDto(itemDto);
+        item.setItemRequest(itemRequest);
+        Item resultItem = itemRepository.save(item);
+
+        return ItemMapper.toItemDto(resultItem);
     }
 
     public ItemDto update(long itemId, long userId, ItemDto itemDto) {
@@ -122,12 +141,6 @@ public class ItemService {
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
-    public void remove(long itemId) {
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Item with id " + itemId + " not exists in the DB"));
-        itemRepository.delete(item);
-    }
-
     public CommentDto addComment(long itemId, long userId, CommentDto commentDto) {
         List<Booking> usersBookings = bookingRepository.findPastBookingsByBookerId(userId, Instant.now());
         Booking booking = usersBookings
@@ -146,6 +159,7 @@ public class ItemService {
         Comment comment = CommentMapper.froCommentDto(commentDto);
         comment.setAuthor(user);
         comment.setItem(item);
+
         return CommentMapper.toCommentDto(commentRepository.save(comment));
     }
 
@@ -156,8 +170,10 @@ public class ItemService {
     private List<ItemDto> setBookingInfo(List<Item> items, long userId) {
         List<ItemDto> itemsDto = new ArrayList<>();
         List<Long> itemIds = items.stream().map(Item::getId).collect(Collectors.toList());
-        List<Booking> futureBookings = bookingRepository.findFutureBookingsDistinctByItemsIdList(itemIds, Instant.now());
-        List<Booking> pastBookings = bookingRepository.findPastBookingsByItemsIdList(itemIds, Instant.now());
+        List<Booking> futureBookings = bookingRepository
+                .findFutureBookingsDistinctByItemsIdList(itemIds, Instant.now());
+        List<Booking> pastBookings = bookingRepository
+                .findPastBookingsByItemsIdList(itemIds, Instant.now());
         for (Item item : items) {
             ItemDto itemDto = ItemMapper.toItemDto(item);
             List<Booking> futureBookingsForItem = futureBookings
@@ -191,6 +207,7 @@ public class ItemService {
             }
             itemsDto.add(0, itemDto);
         }
+
         return itemsDto;
     }
 

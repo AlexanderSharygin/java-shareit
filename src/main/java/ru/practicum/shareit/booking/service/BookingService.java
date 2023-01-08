@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoStatus;
@@ -77,7 +78,7 @@ public class BookingService {
                 .getId();
         if (bookerId != userId && itemOwnerId != userId) {
             throw new NotFoundException(
-                    "User with id " + userId + "is not booker/owner for booking with id " + bookingId);
+                    "User with id " + userId + " is not booker/owner for booking with id " + bookingId);
         }
 
         return BookingMapper.toBookingDto(booking);
@@ -107,52 +108,55 @@ public class BookingService {
                 .orElseThrow(() -> new NotFoundException("Booking with id " + bookingId + " not exists in the DB")));
     }
 
-    public List<BookingDto> getBookingsForUser(String status, long userId) {
+    public List<BookingDto> getBookingsForUser(String status, long userId, Pageable paging) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User with id " + userId + " not exists in the DB"));
         List<BookingDto> result;
         if (status.equals(BookingDtoStatus.WAITING.toString())) {
-            result = bookingRepository.findByBooker_IdAndStatusOrderByStartDateTimeDesc(userId, BookingStatus.WAITING)
+            result = bookingRepository.findByBooker_IdAndStatusOrderByStartDateTimeDesc(
+                            userId, BookingStatus.WAITING, paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.REJECTED.toString())) {
-            result = bookingRepository.findByBooker_IdAndStatusOrderByStartDateTimeDesc(userId, BookingStatus.REJECTED)
+            result = bookingRepository.findByBooker_IdAndStatusOrderByStartDateTimeDesc(
+                            userId, BookingStatus.REJECTED, paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.FUTURE.toString())) {
-            result = bookingRepository.findFutureBookingsByBookerId(userId, Instant.now())
+            result = bookingRepository.findFutureBookingsByBookerId(userId, Instant.now(), paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.PAST.toString())) {
-            result = bookingRepository.findPastBookingsByBookerId(userId, Instant.now())
+            result = bookingRepository.findPastBookingsByBookerId(userId, Instant.now(), paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.CURRENT.toString())) {
             result = bookingRepository.findCurrentBookingsByBookerId(
-                            userId, Instant.now(), Instant.now())
+                            userId, Instant.now(), Instant.now(), paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.ALL.toString())) {
-            result = bookingRepository.findByBooker_IdOrderByStartDateTimeDesc(userId)
+            result = bookingRepository.findByBooker_IdOrderByStartDateTimeDesc(userId, paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else {
             throw new BadRequestException("Unknown state: " + status);
         }
+
         return result;
     }
 
 
-    public List<BookingDto> getBookingsForUserItems(String status, long userId) {
+    public List<BookingDto> getBookingsForUserItems(String status, long userId, Pageable paging) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User with id " + userId + " not exists in the DB"));
-        List<Long> userItems = itemRepository.findAllByOwnerId(userId)
+        List<Long> userItems = itemRepository.findByOwner_Id(userId)
                 .stream()
                 .map(Item::getId)
                 .collect(Collectors.toList());
@@ -161,45 +165,44 @@ public class BookingService {
             result = new ArrayList<>();
         } else if (status.equals(BookingDtoStatus.WAITING.toString())) {
             result = bookingRepository.findDistinctByItem_IdInAndStatus(
-                            userItems, BookingStatus.WAITING)
+                            userItems, BookingStatus.WAITING, paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.REJECTED.toString())) {
             result = bookingRepository.findDistinctByItem_IdInAndStatus(
-                            userItems, BookingStatus.REJECTED)
+                            userItems, BookingStatus.REJECTED, paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.FUTURE.toString())) {
-            result = bookingRepository.findFutureBookingsDistinctByItemsIdList(
-                            userItems, Instant.now())
+            result = bookingRepository.findFutureBookingsDistinctByItemsIdList(userItems, Instant.now(), paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.PAST.toString())) {
             result = bookingRepository.findPastBookingsByItemsIdList(
-                            userItems, Instant.now())
+                            userItems, Instant.now(), paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.CURRENT.toString())) {
-
             result = bookingRepository
                     .findCurrentBookingsByItemIdList(
-                            userItems, Instant.now(), Instant.now())
+                            userItems, Instant.now(), Instant.now(), paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
 
         } else if (status.equals(BookingDtoStatus.ALL.toString())) {
-            result = bookingRepository.findDistinctByItem_IdInOrderByStartDateTimeDesc(userItems)
+            result = bookingRepository.findDistinctByItem_IdInOrderByStartDateTimeDesc(userItems, paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else {
             throw new BadRequestException("Unknown state: " + status);
         }
+
         return result;
     }
 }
