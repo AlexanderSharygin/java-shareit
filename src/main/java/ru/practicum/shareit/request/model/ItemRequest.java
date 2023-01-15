@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,6 +16,7 @@ import java.time.Instant;
 @Setter
 @ToString
 @Entity
+@AllArgsConstructor
 @Table(name = "item_requests")
 public class ItemRequest {
 
@@ -31,5 +33,4 @@ public class ItemRequest {
 
     public ItemRequest() {
     }
-
 }

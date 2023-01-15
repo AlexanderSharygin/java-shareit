@@ -28,10 +28,9 @@ public class Item {
     private Boolean available;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id")
     private User owner;
 
-    @OneToOne
+    @ManyToOne
     private ItemRequest itemRequest;
 
     public Item() {
