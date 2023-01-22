@@ -37,14 +37,16 @@ public class UsersClient extends BaseClient {
     }
 
     public ResponseEntity<Object> create(UserDto userDto) {
+       userDto.setId(-1L);
         return post("", userDto);
     }
 
     public ResponseEntity<Object> update(long userId, UserDto userDto) {
-        return patch("/", userId, userDto);
+       userDto.setId(userId);
+        return patch("/"+ userId, userDto);
     }
 
     public ResponseEntity<Object> delete(long userId) {
-        return patch("/", userId);
+        return delete("/"+ userId);
     }
 }
