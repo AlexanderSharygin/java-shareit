@@ -1,4 +1,4 @@
-package shareit.booking.client;
+package shareit.user.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,16 +9,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.user.dto.UserDto;
 import shareit.client.BaseClient;
 
 import java.util.Map;
 
 @Service
-public class BookingClient extends BaseClient {
-    private static final String API_PREFIX = "/bookings";
+public class UsersClient extends BaseClient {
+    private static final String API_PREFIX = "/users";
 
     @Autowired
-    public BookingClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
+    public UsersClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
         super(
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl + API_PREFIX))
@@ -27,21 +28,23 @@ public class BookingClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> getBookings(long userId, BookingStatus status, Integer from, Integer size) {
-        Map<String, Object> parameters = Map.of(
-                "state", status.name(),
-                "from", from,
-                "size", size
-        );
-        return get("?state={state}&from={from}&size={size}", userId, parameters);
+    public ResponseEntity<Object> getAll() {
+        return get("");
     }
 
-
-    public ResponseEntity<Object> bookItem(long userId, ItemRequestDto requestDto) {
-        return post("", userId, requestDto);
+    public ResponseEntity<Object> getById(long userId) {
+        return get("/"+ userId);
     }
 
-    public ResponseEntity<Object> getById(long userId, Long bookingId) {
-        return get("/" + bookingId, userId);
+    public ResponseEntity<Object> create(UserDto userDto) {
+        return post("", userDto);
+    }
+
+    public ResponseEntity<Object> update(long userId, UserDto userDto) {
+        return patch("/", userId, userDto);
+    }
+
+    public ResponseEntity<Object> delete(long userId) {
+        return patch("/", userId);
     }
 }

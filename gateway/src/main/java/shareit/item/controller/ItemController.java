@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 public class ItemController {
-
+/*
     private final ItemService itemService;
 
     @Autowired
@@ -65,5 +65,5 @@ public class ItemController {
     public CommentDto addComment(@Valid @RequestBody CommentDto commentDto,
                                  @PathVariable("id") long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
         return itemService.addComment(itemId, userId, commentDto);
-    }
+    }*/
 }

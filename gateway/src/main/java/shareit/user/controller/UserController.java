@@ -1,45 +1,46 @@
 package shareit.user.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.service.UserService;
+import shareit.user.client.UsersClient;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 public class UserController {
 
-    private final UserService userService;
+    private final UsersClient usersClient;
 
     @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UsersClient userService) {
+        this.usersClient = userService;
     }
 
     @GetMapping("/users")
-    public List<UserDto> getUsers() {
-        return userService.getAll();
+    public ResponseEntity<Object> getUsers() {
+        return usersClient.getAll();
     }
 
     @GetMapping("/users/{id}")
-    public UserDto getUserById(@PathVariable("id") Long usersId) {
-        return userService.getById(usersId);
+    public ResponseEntity<Object> getUserById(@PathVariable("id") Long usersId) {
+        return usersClient.getById(usersId);
     }
 
     @PostMapping(value = "/users")
-    public UserDto create(@Valid @RequestBody UserDto userDto) {
-        return userService.create(userDto);
+    public ResponseEntity<Object> create(@Valid @RequestBody UserDto userDto) {
+        return usersClient.create(userDto);
     }
 
     @PatchMapping(value = "/users/{id}")
-    public UserDto update(@PathVariable("id") long usersId, @Valid @RequestBody UserDto userDto) {
-        return userService.update(usersId, userDto);
+    public ResponseEntity<Object> update(@PathVariable("id") long usersId, @Valid @RequestBody UserDto userDto) {
+        return usersClient.update(usersId, userDto);
     }
 
     @DeleteMapping(value = "/users/{id}")
     public void delete(@PathVariable("id") long usersId) {
-        userService.delete(usersId);
+        usersClient.delete(usersId);
     }
 }

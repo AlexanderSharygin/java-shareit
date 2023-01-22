@@ -4,6 +4,7 @@ package shareit.booking.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
@@ -15,19 +16,18 @@ import java.util.List;
 
 @RestController
 public class BookingController {
-    private final BookingClient bookingClient;
+  /*  private final BookingClient bookingClient;
 
     @Autowired
-    public BookingController(BookingService bookingService, BookingClient bookingClient) {
+    public BookingController(BookingClient bookingClient) {
         this.bookingClient = bookingClient;
-        this.bookingService = bookingService;
     }
 
     @GetMapping("/bookings/{id}")
-    public BookingDto getBookingById(@PathVariable("id") Long bookingId,
-                                     @RequestHeader("X-Sharer-User-Id") long userId) {
+    public ResponseEntity<Object> getBookingById(@PathVariable("id") Long bookingId,
+                                                 @RequestHeader("X-Sharer-User-Id") long userId) {
 
-        return bookingService.getById(bookingId, userId);
+        return bookingClient.getById(bookingId, userId);
     }
 
     @GetMapping("/bookings")
@@ -71,5 +71,5 @@ public class BookingController {
                                    @RequestParam Boolean approved) {
 
         return bookingService.changeBookingStatus(bookingId, userId, approved);
-    }
+    }*/
 }

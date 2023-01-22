@@ -12,9 +12,9 @@ import java.util.List;
 
 @RestController
 public class ItemRequestController {
-    private final RequestService requestService;
+ /*   private final RequestService requestService;
 
-    @Autowired
+
     public ItemRequestController(RequestService requestService) {
         this.requestService = requestService;
     }
@@ -45,5 +45,5 @@ public class ItemRequestController {
     public ItemRequestDto getRequestWithResponsesById(@RequestHeader("X-Sharer-User-Id") long userId,
                                                       @PathVariable("id") long requestId) {
         return requestService.getRequestById(userId, requestId);
-    }
+    }*/
 }
