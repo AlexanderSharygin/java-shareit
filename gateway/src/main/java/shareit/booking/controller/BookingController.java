@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 public class BookingController {
-  /*  private final BookingClient bookingClient;
+    private final BookingClient bookingClient;
 
     @Autowired
     public BookingController(BookingClient bookingClient) {
@@ -27,11 +27,11 @@ public class BookingController {
     public ResponseEntity<Object> getBookingById(@PathVariable("id") Long bookingId,
                                                  @RequestHeader("X-Sharer-User-Id") long userId) {
 
-        return bookingClient.getById(bookingId, userId);
+        return bookingClient.getById(userId, bookingId);
     }
 
     @GetMapping("/bookings")
-    public List<BookingDto> getBookingsForUser(@RequestParam(required = false, defaultValue = "ALL")
+    public ResponseEntity<Object> getBookingsForUser(@RequestParam(required = false, defaultValue = "ALL")
                                                String state,
                                                @RequestHeader("X-Sharer-User-Id") long userId,
                                                @RequestParam(required = false, defaultValue = "0") int from,
@@ -39,13 +39,11 @@ public class BookingController {
         if (from < 0 || size < 0) {
             throw new BadRequestException("Wrong pagination parameters");
         }
-        Pageable paging = PageRequest.of(from / size, size);
-
-        return bookingService.getBookingsForUser(state, userId, paging);
+        return bookingClient.getBookingForUser(userId, state, from, size);
     }
 
     @GetMapping("/bookings/owner")
-    public List<BookingDto> getBookingsForUsersItems(@RequestParam(required = false, defaultValue = "ALL")
+    public ResponseEntity<Object> getBookingsForUsersItems(@RequestParam(required = false, defaultValue = "ALL")
                                                      String state,
                                                      @RequestHeader("X-Sharer-User-Id") long userId,
                                                      @RequestParam(required = false, defaultValue = "0") int from,
@@ -55,21 +53,21 @@ public class BookingController {
         }
         Pageable paging = PageRequest.of(from, size);
 
-        return bookingService.getBookingsForUserItems(state, userId, paging);
+        return bookingClient.getBookingForUsersItems(userId, state, from, size);
     }
 
     @PostMapping(value = "/bookings")
-    public BookingDto create(@Valid @RequestBody BookingDto bookingDto,
+    public ResponseEntity<Object> create(@Valid @RequestBody BookingDto bookingDto,
                              @RequestHeader("X-Sharer-User-Id") long userId) {
 
-        return bookingService.create(userId, bookingDto);
+        return bookingClient.create(userId, bookingDto);
     }
 
     @PatchMapping("/bookings/{id}")
-    public BookingDto updateStatus(@PathVariable("id") Long bookingId,
+    public ResponseEntity<Object> updateStatus(@PathVariable("id") Long bookingId,
                                    @RequestHeader("X-Sharer-User-Id") long userId,
                                    @RequestParam Boolean approved) {
 
-        return bookingService.changeBookingStatus(bookingId, userId, approved);
-    }*/
+        return bookingClient.changeBookingStatus(bookingId, userId, approved);
+    }
 }

@@ -7,8 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 import shareit.client.BaseClient;
 
 import java.util.Map;
@@ -27,21 +29,38 @@ public class BookingClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> getBookings(long userId, BookingStatus status, Integer from, Integer size) {
+
+    public ResponseEntity<Object> getById(long userId, Long bookingId) {
+        return get("/" + bookingId, userId);
+    }
+
+    public ResponseEntity<Object> getBookingForUser(long userId, String status, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
-                "state", status.name(),
+                "state", status,
                 "from", from,
                 "size", size
         );
         return get("?state={state}&from={from}&size={size}", userId, parameters);
     }
 
-
-    public ResponseEntity<Object> bookItem(long userId, ItemRequestDto requestDto) {
-        return post("", userId, requestDto);
+    public ResponseEntity<Object> getBookingForUsersItems(long userId, String status, Integer from, Integer size) {
+        Map<String, Object> parameters = Map.of(
+                "state", status,
+                "from", from,
+                "size", size
+        );
+        return get("/owner?state={state}&from={from}&size={size}", userId, parameters);
     }
 
-    public ResponseEntity<Object> getById(long userId, Long bookingId) {
-        return get("/" + bookingId, userId);
+    public ResponseEntity<Object> create(long userId, BookingDto bookingDto) {
+        bookingDto.setId(-1L);
+        bookingDto.setStatus(BookingStatus.WAITING);
+        bookingDto.setBooker(new User());
+        bookingDto.setItem(new Item());
+        return post("", userId, bookingDto);
+    }
+
+    public ResponseEntity<Object> changeBookingStatus(Long bookingId, long userId, Boolean approved) {
+        return patch("/" + bookingId + "?approved="+approved, userId);
     }
 }
