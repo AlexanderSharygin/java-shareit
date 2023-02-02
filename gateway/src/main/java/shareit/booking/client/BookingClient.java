@@ -11,7 +11,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
-import shareit.client.BaseClient;
+import shareit.BaseClient;
 
 import java.util.Map;
 
@@ -28,7 +28,6 @@ public class BookingClient extends BaseClient {
                         .build()
         );
     }
-
 
     public ResponseEntity<Object> getById(long userId, Long bookingId) {
         return get("/" + bookingId, userId);
@@ -61,6 +60,6 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> changeBookingStatus(Long bookingId, long userId, Boolean approved) {
-        return patch("/" + bookingId + "?approved="+approved, userId);
+        return patch("/" + bookingId + "?approved=" + approved, userId);
     }
 }

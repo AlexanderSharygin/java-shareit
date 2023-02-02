@@ -1,12 +1,16 @@
 package ru.practicum.shareit.request.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exception.model.BadRequestException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.RequestService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 
@@ -20,12 +24,8 @@ public class ItemRequestController {
     }
 
     @PostMapping(value = "/requests")
-    public ItemRequestDto create(@Valid @RequestBody ItemRequestDto itemRequestDto,
+    public ItemRequestDto create(@RequestBody ItemRequestDto itemRequestDto,
                                  @RequestHeader("X-Sharer-User-Id") long userId) {
-        if (itemRequestDto.getDescription() == null) {
-            throw new BadRequestException("Description can't be null");
-        }
-
         return requestService.create(itemRequestDto, userId);
     }
 
@@ -36,8 +36,8 @@ public class ItemRequestController {
 
     @GetMapping(value = "/requests/all")
     public List<ItemRequestDto> getAllRequestsWithResponses(@RequestHeader("X-Sharer-User-Id") long userId,
-                                                            @RequestParam(required = false, defaultValue = "0") int from,
-                                                            @RequestParam(required = false, defaultValue = "100") int size) {
+                                                            @RequestParam int from,
+                                                            @RequestParam int size) {
         return requestService.getAllRequests(userId, from, size);
     }
 

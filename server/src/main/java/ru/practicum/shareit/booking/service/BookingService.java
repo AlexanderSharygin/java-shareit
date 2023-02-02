@@ -17,8 +17,8 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -125,18 +125,18 @@ public class BookingService {
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.FUTURE.toString())) {
-            result = bookingRepository.findFutureBookingsByBookerId(userId, Instant.now(), paging)
+            result = bookingRepository.findFutureBookingsByBookerId(userId, LocalDateTime.now().toInstant(ZoneOffset.UTC), paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.PAST.toString())) {
-            result = bookingRepository.findPastBookingsByBookerId(userId, Instant.now(), paging)
+            result = bookingRepository.findPastBookingsByBookerId(userId, LocalDateTime.now().toInstant(ZoneOffset.UTC), paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.CURRENT.toString())) {
             result = bookingRepository.findCurrentBookingsByBookerId(
-                            userId, Instant.now(), Instant.now(), paging)
+                            userId, LocalDateTime.now().toInstant(ZoneOffset.UTC), LocalDateTime.now().toInstant(ZoneOffset.UTC), paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
@@ -176,20 +176,20 @@ public class BookingService {
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.FUTURE.toString())) {
-            result = bookingRepository.findFutureBookingsDistinctByItemsIdList(userItems, Instant.now(), paging)
+            result = bookingRepository.findFutureBookingsDistinctByItemsIdList(userItems, LocalDateTime.now().toInstant(ZoneOffset.UTC), paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.PAST.toString())) {
             result = bookingRepository.findPastBookingsByItemsIdList(
-                            userItems, Instant.now(), paging)
+                            userItems, LocalDateTime.now().toInstant(ZoneOffset.UTC), paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.CURRENT.toString())) {
             result = bookingRepository
                     .findCurrentBookingsByItemIdList(
-                            userItems, Instant.now(), Instant.now(), paging)
+                            userItems, LocalDateTime.now().toInstant(ZoneOffset.UTC), LocalDateTime.now().toInstant(ZoneOffset.UTC), paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());

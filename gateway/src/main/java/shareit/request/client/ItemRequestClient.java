@@ -10,7 +10,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.model.User;
-import shareit.client.BaseClient;
+import shareit.BaseClient;
 
 import java.time.LocalDateTime;
 import java.util.Map;

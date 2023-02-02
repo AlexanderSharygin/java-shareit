@@ -6,13 +6,11 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.model.User;
-import shareit.client.BaseClient;
+import shareit.BaseClient;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -52,7 +50,6 @@ public class ItemClient extends BaseClient {
         return get("/search?text={text}&from={from}&size={size}", userId, parameters);
     }
 
-
     public ResponseEntity<Object> create(long userId, ItemDto itemDto) {
         itemDto.setId(-1L);
         itemDto.setOwner(new User());
@@ -68,6 +65,6 @@ public class ItemClient extends BaseClient {
     public ResponseEntity<Object> addComment(long itemId, long userId, CommentDto commentDto) {
         commentDto.setId(-1L);
         commentDto.setCreated(LocalDateTime.now());
-        return post("/" + itemId+"/comment", userId, commentDto);
+        return post("/" + itemId + "/comment", userId, commentDto);
     }
 }

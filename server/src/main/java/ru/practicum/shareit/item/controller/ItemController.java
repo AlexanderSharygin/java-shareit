@@ -30,8 +30,8 @@ public class ItemController {
 
     @GetMapping("/items")
     public List<ItemDto> getAllItems(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
-                                     @RequestParam(required = false, defaultValue = "0") int from,
-                                     @RequestParam(required = false, defaultValue = "100") int size) {
+                                     @RequestParam int from,
+                                     @RequestParam int size) {
         Pageable paging = PageRequest.of(from, size);
         if (userId == null) {
             return itemService.getAll(paging);
@@ -48,8 +48,8 @@ public class ItemController {
     @GetMapping("/items/search")
     public List<ItemDto> getItemsWithSearch(@RequestHeader(value = "X-Sharer-User-Id", required = false)
                                             @RequestParam String text,
-                                            @RequestParam(required = false, defaultValue = "0") int from,
-                                            @RequestParam(required = false, defaultValue = "100") int size) {
+                                            @RequestParam int from,
+                                            @RequestParam int size) {
         Pageable paging = PageRequest.of(from, size);
         return itemService.getByNameOrDescription(text, paging);
     }

@@ -20,23 +20,23 @@ import javax.validation.Valid;
 @RestController
 public class ItemController {
 
-    private final ItemClient itemService;
+    private final ItemClient itemClient;
 
     @Autowired
-    public ItemController(ItemClient itemService) {
-        this.itemService = itemService;
+    public ItemController(ItemClient itemClient) {
+        this.itemClient = itemClient;
     }
 
     @GetMapping("/items")
     public ResponseEntity<Object> getAllItems(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
                                               @RequestParam(required = false, defaultValue = "0") int from,
                                               @RequestParam(required = false, defaultValue = "100") int size) {
-        return itemService.getAll(userId, from, size);
+        return itemClient.getAll(userId, from, size);
     }
 
     @GetMapping("/items/{id}")
     public ResponseEntity<Object> getItemById(@PathVariable("id") long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
-        return itemService.getById(itemId, userId);
+        return itemClient.getById(itemId, userId);
     }
 
     @GetMapping("/items/search")
@@ -45,23 +45,23 @@ public class ItemController {
                                                      @RequestParam(required = false, defaultValue = "0") int from,
                                                      @RequestParam(required = false, defaultValue = "100") int size) {
 
-        return itemService.search(userId, text, from, size);
+        return itemClient.search(userId, text, from, size);
     }
 
     @PostMapping(value = "/items")
     public ResponseEntity<Object> create(@Valid @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") long userId) {
-        return itemService.create(userId, itemDto);
+        return itemClient.create(userId, itemDto);
     }
 
     @PatchMapping(value = "/items/{id}")
     public ResponseEntity<Object> update(@Valid @RequestBody ItemDto itemDto, @PathVariable("id") long itemId,
                                          @RequestHeader("X-Sharer-User-Id") long userId) {
-        return itemService.update(itemId, userId, itemDto);
+        return itemClient.update(itemId, userId, itemDto);
     }
 
-   @PostMapping(value = "/items/{id}/comment")
+    @PostMapping(value = "/items/{id}/comment")
     public ResponseEntity<Object> addComment(@Valid @RequestBody CommentDto commentDto,
-                                 @PathVariable("id") long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
-        return itemService.addComment(itemId, userId, commentDto);
+                                             @PathVariable("id") long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
+        return itemClient.addComment(itemId, userId, commentDto);
     }
 }

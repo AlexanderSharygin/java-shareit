@@ -22,9 +22,9 @@ import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -142,7 +142,7 @@ public class ItemService {
     }
 
     public CommentDto addComment(long itemId, long userId, CommentDto commentDto) {
-        List<Booking> usersBookings = bookingRepository.findPastBookingsByBookerId(userId, Instant.now());
+        List<Booking> usersBookings = bookingRepository.findPastBookingsByBookerId(userId, LocalDateTime.now().toInstant(ZoneOffset.UTC));
         Booking booking = usersBookings
                 .stream()
                 .filter(k -> k.getItem().getId() == itemId)
@@ -171,9 +171,9 @@ public class ItemService {
         List<ItemDto> itemsDto = new ArrayList<>();
         List<Long> itemIds = items.stream().map(Item::getId).collect(Collectors.toList());
         List<Booking> futureBookings = bookingRepository
-                .findFutureBookingsDistinctByItemsIdList(itemIds, Instant.now());
+                .findFutureBookingsDistinctByItemsIdList(itemIds, LocalDateTime.now().toInstant(ZoneOffset.UTC));
         List<Booking> pastBookings = bookingRepository
-                .findPastBookingsByItemsIdList(itemIds, Instant.now());
+                .findPastBookingsByItemsIdList(itemIds, LocalDateTime.now().toInstant(ZoneOffset.UTC));
         for (Item item : items) {
             ItemDto itemDto = ItemMapper.toItemDto(item);
             List<Booking> futureBookingsForItem = futureBookings

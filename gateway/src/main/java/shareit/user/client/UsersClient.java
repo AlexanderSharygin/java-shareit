@@ -7,12 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.dto.UserDto;
-import shareit.client.BaseClient;
-
-import java.util.Map;
+import shareit.BaseClient;
 
 @Service
 public class UsersClient extends BaseClient {
@@ -33,20 +29,20 @@ public class UsersClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getById(long userId) {
-        return get("/"+ userId);
+        return get("/" + userId);
     }
 
     public ResponseEntity<Object> create(UserDto userDto) {
-       userDto.setId(-1L);
+        userDto.setId(-1L);
         return post("", userDto);
     }
 
     public ResponseEntity<Object> update(long userId, UserDto userDto) {
-       userDto.setId(userId);
-        return patch("/"+ userId, userDto);
+        userDto.setId(userId);
+        return patch("/" + userId, userDto);
     }
 
     public ResponseEntity<Object> delete(long userId) {
-        return delete("/"+ userId);
+        return delete("/" + userId);
     }
 }
