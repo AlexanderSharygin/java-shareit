@@ -1,26 +1,27 @@
-package shareit.request.controller;
+package ru.practicum.shareit.request.controller;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exception.model.BadRequestException;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import shareit.request.client.ItemRequestClient;
+import ru.practicum.shareit.request.service.RequestService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 @RestController
 public class ItemRequestController {
-   private final ItemRequestClient requestService;
+    private final RequestService requestService;
 
-
-    public ItemRequestController(ItemRequestClient requestService) {
+    @Autowired
+    public ItemRequestController(RequestService requestService) {
         this.requestService = requestService;
     }
 
     @PostMapping(value = "/requests")
-    public ResponseEntity<Object> create(@Valid @RequestBody ItemRequestDto itemRequestDto,
-                                         @RequestHeader("X-Sharer-User-Id") long userId) {
+    public ItemRequestDto create(@Valid @RequestBody ItemRequestDto itemRequestDto,
+                                 @RequestHeader("X-Sharer-User-Id") long userId) {
         if (itemRequestDto.getDescription() == null) {
             throw new BadRequestException("Description can't be null");
         }
@@ -29,20 +30,22 @@ public class ItemRequestController {
     }
 
     @GetMapping(value = "/requests")
-    public ResponseEntity<Object> getUserRequestsWithResponses(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemRequestDto> getUserRequestsWithResponses(@RequestHeader("X-Sharer-User-Id") long userId) {
         return requestService.getUserRequests(userId);
     }
 
     @GetMapping(value = "/requests/all")
-    public ResponseEntity<Object> getAllRequestsWithResponses(@RequestHeader("X-Sharer-User-Id") long userId,
+    public List<ItemRequestDto> getAllRequestsWithResponses(@RequestHeader("X-Sharer-User-Id") long userId,
                                                             @RequestParam(required = false, defaultValue = "0") int from,
                                                             @RequestParam(required = false, defaultValue = "100") int size) {
         return requestService.getAllRequests(userId, from, size);
     }
 
     @GetMapping(value = "/requests/{id}")
-    public ResponseEntity<Object> getRequestWithResponsesById(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemRequestDto getRequestWithResponsesById(@RequestHeader("X-Sharer-User-Id") long userId,
                                                       @PathVariable("id") long requestId) {
-        return requestService.getById(userId, requestId);
+        return requestService.getRequestById(userId, requestId);
     }
 }
+
+

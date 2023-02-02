@@ -8,9 +8,11 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.model.User;
 import shareit.client.BaseClient;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -27,32 +29,28 @@ public class ItemRequestClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> getAll(Long userId, int from, int size) {
+    public ResponseEntity<Object> getAllRequests(Long userId, int from, int size) {
         Map<String, Object> parameters = Map.of(
                 "from", from,
                 "size", size
         );
-        return get("?from={from}&size={size}", userId, parameters);
+        return get("/all?from={from}&size={size}", userId, parameters);
     }
 
-    public ResponseEntity<Object> getById(long itemId, long userId) {
-        return get("/" + itemId, userId);
+    public ResponseEntity<Object> getUserRequests(long userId) {
+        return get("", userId);
     }
 
-    public ResponseEntity<Object> search(long userId, String text, int from, int size) {
-        Map<String, Object> parameters = Map.of(
-                "text", text,
-                "from", from,
-                "size", size
-        );
-        return get("/search?text={text}&from={from}&size={size}", userId, parameters);
+    public ResponseEntity<Object> getById(long userId, long requestId) {
+        return get("/" + requestId, userId);
     }
 
 
-    public ResponseEntity<Object> create(long userId, ItemDto itemDto) {
-        itemDto.setId(-1L);
-        itemDto.setOwner(new User());
-        return post("", userId, itemDto);
+    public ResponseEntity<Object> create(ItemRequestDto itemRequestDto, long userId) {
+        itemRequestDto.setId(-1L);
+        itemRequestDto.setOwner(new User());
+        itemRequestDto.setCreated(LocalDateTime.now());
+        return post("", userId, itemRequestDto);
     }
 
     public ResponseEntity<Object> update(long itemId, long userId, ItemDto itemDto) {
