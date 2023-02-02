@@ -9,10 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.model.User;
 import shareit.client.BaseClient;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -61,5 +63,11 @@ public class ItemClient extends BaseClient {
         itemDto.setId(itemId);
         itemDto.setOwner(new User());
         return patch("/" + itemId, userId, itemDto);
+    }
+
+    public ResponseEntity<Object> addComment(long itemId, long userId, CommentDto commentDto) {
+        commentDto.setId(-1L);
+        commentDto.setCreated(LocalDateTime.now());
+        return post("/" + itemId+"/comment", userId, commentDto);
     }
 }

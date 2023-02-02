@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import shareit.item.client.ItemClient;
 
@@ -58,9 +59,9 @@ public class ItemController {
         return itemService.update(itemId, userId, itemDto);
     }
 
-  /*  @PostMapping(value = "/items/{id}/comment")
-    public CommentDto addComment(@Valid @RequestBody CommentDto commentDto,
+   @PostMapping(value = "/items/{id}/comment")
+    public ResponseEntity<Object> addComment(@Valid @RequestBody CommentDto commentDto,
                                  @PathVariable("id") long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
         return itemService.addComment(itemId, userId, commentDto);
-    }*/
+    }
 }
