@@ -1,9 +1,7 @@
 version: '3.8'
 services:
   gateway:
-    build: .
-    image: amazoncorretto:11-alpine-jdk
-    container_name: shareItGateway
+    build: C:\Repositories\JavaEducation\ShareIt1\java-shareit\gateway
     ports:
       - "8080:8080"
     depends_on:
@@ -12,23 +10,20 @@ services:
       - SHAREIT_SERVER_URL=http://server:9090
 
   server:
-    build: .
-    image: amazoncorretto:11-alpine-jdk
-    container_name: shareItServer
+    build: C:\Repositories\JavaEducation\ShareIt1\java-shareit\server
     ports:
       - "9090:9090"
     depends_on:
       - db
     environment:
       - DB_NAME=shareit
-      - POSTGRES_USER=root
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
       - DB_HOST=db
       - DB_PORT=5432
 
   db:
     image: postgres:13.7-alpine
-    container_name: shareItDB
     ports:
       - "6541:5432"
     environment:
