@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.shareit.exception.model.BadRequestException;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
+
+import shareit.exception.model.BadRequestException;
 import shareit.request.client.ItemRequestClient;
+import shareit.request.dto.ItemRequestDto;
+
 
 import javax.validation.Valid;
 

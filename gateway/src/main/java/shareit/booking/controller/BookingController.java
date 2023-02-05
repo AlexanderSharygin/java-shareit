@@ -11,9 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.exception.model.BadRequestException;
+
+
 import shareit.booking.client.BookingClient;
+import shareit.booking.dto.BookingDto;
+import shareit.exception.model.BadRequestException;
+
 
 import javax.validation.Valid;
 

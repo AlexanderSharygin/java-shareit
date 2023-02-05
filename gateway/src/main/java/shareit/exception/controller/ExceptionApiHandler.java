@@ -7,10 +7,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exception.model.BadRequestException;
-import ru.practicum.shareit.exception.model.ConflictException;
-import ru.practicum.shareit.exception.model.ErrorResponse;
-import ru.practicum.shareit.exception.model.NotFoundException;
+import shareit.exception.model.BadRequestException;
+import shareit.exception.model.ConflictException;
+import shareit.exception.model.ErrorResponse;
+import shareit.exception.model.NotFoundException;
+
 
 import java.util.List;
 
