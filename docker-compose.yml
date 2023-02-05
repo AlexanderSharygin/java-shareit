@@ -3,6 +3,7 @@ services:
   gateway:
     build: .
     image: amazoncorretto:11-alpine-jdk
+    container_name: shareItGateway
     ports:
       - "8080:8080"
     depends_on:
@@ -13,15 +14,21 @@ services:
   server:
     build: .
     image: amazoncorretto:11-alpine-jdk
+    container_name: shareItServer
     ports:
       - "9090:9090"
     depends_on:
       - db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
+      - DB_NAME=shareit
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=admin
+      - DB_HOST=db
+      - DB_PORT=5432
 
   db:
     image: postgres:13.7-alpine
+    container_name: shareItDB
     ports:
       - "6541:5432"
     environment:
