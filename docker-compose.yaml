@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   gateway:
-    build: C:\Repositories\JavaEducation\ShareIt1\java-shareit\gateway
+    build: ./gateway
     ports:
       - "8080:8080"
     depends_on:
@@ -10,7 +10,7 @@ services:
       - SHAREIT_SERVER_URL=http://server:9090
 
   server:
-    build: C:\Repositories\JavaEducation\ShareIt1\java-shareit\server
+    build: ./server
     ports:
       - "9090:9090"
     depends_on:
