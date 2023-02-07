@@ -39,10 +39,10 @@ public class RequestService {
         this.itemRequestRepository = itemRequestRepository;
         this.itemRepository = itemRepository;
     }
-    
+
     public ItemRequestDto create(ItemRequestDto itemRequestDto, long userId) {
-        User owner = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User with id " + userId + " not exists in the DB"));
+        User owner = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
+                "User with id " + userId + " not exists in the DB"));
         ItemRequest itemRequest = ItemRequestMapper.fromItemRequestDto(itemRequestDto);
         itemRequest.setOwner(owner);
         ItemRequest resultRequest = itemRequestRepository.save(itemRequest);
