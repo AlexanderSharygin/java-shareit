@@ -125,18 +125,21 @@ public class BookingService {
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.FUTURE.toString())) {
-            result = bookingRepository.findFutureBookingsByBookerId(userId, LocalDateTime.now().toInstant(ZoneOffset.UTC), paging)
+            result = bookingRepository.findFutureBookingsByBookerId(userId,
+                            LocalDateTime.now().toInstant(ZoneOffset.UTC), paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.PAST.toString())) {
-            result = bookingRepository.findPastBookingsByBookerId(userId, LocalDateTime.now().toInstant(ZoneOffset.UTC), paging)
+            result = bookingRepository.findPastBookingsByBookerId(userId,
+                            LocalDateTime.now().toInstant(ZoneOffset.UTC), paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.CURRENT.toString())) {
-            result = bookingRepository.findCurrentBookingsByBookerId(
-                            userId, LocalDateTime.now().toInstant(ZoneOffset.UTC), LocalDateTime.now().toInstant(ZoneOffset.UTC), paging)
+            result = bookingRepository.findCurrentBookingsByBookerId(userId,
+                            LocalDateTime.now().toInstant(ZoneOffset.UTC),
+                            LocalDateTime.now().toInstant(ZoneOffset.UTC), paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
@@ -176,7 +179,8 @@ public class BookingService {
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.FUTURE.toString())) {
-            result = bookingRepository.findFutureBookingsDistinctByItemsIdList(userItems, LocalDateTime.now().toInstant(ZoneOffset.UTC), paging)
+            result = bookingRepository.findFutureBookingsDistinctByItemsIdList(userItems,
+                            LocalDateTime.now().toInstant(ZoneOffset.UTC), paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());
@@ -189,7 +193,8 @@ public class BookingService {
         } else if (status.equals(BookingDtoStatus.CURRENT.toString())) {
             result = bookingRepository
                     .findCurrentBookingsByItemIdList(
-                            userItems, LocalDateTime.now().toInstant(ZoneOffset.UTC), LocalDateTime.now().toInstant(ZoneOffset.UTC), paging)
+                            userItems, LocalDateTime.now().toInstant(ZoneOffset.UTC),
+                            LocalDateTime.now().toInstant(ZoneOffset.UTC), paging)
                     .stream()
                     .map(BookingMapper::toBookingDto)
                     .collect(Collectors.toList());

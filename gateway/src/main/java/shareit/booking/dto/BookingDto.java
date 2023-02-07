@@ -3,12 +3,9 @@ package shareit.booking.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
-
-
-
+import shareit.booking.BookingStatus;
 import shareit.item.model.Item;
 import shareit.user.model.User;
-import shareit.booking.BookingStatus;
 
 import java.time.LocalDateTime;
 

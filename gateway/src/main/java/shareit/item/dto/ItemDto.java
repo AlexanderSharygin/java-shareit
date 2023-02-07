@@ -4,9 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 import org.hibernate.validator.constraints.Length;
-import shareit.user.model.User;
 import shareit.booking.dto.BookingInfo;
-
+import shareit.user.model.User;
 
 import java.util.List;
 

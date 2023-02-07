@@ -7,13 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-
-
 import shareit.BaseClient;
-import shareit.item.model.Item;
-import shareit.user.model.User;
 import shareit.booking.BookingStatus;
 import shareit.booking.dto.BookingDto;
+import shareit.item.model.Item;
+import shareit.user.model.User;
 
 import java.util.Map;
 

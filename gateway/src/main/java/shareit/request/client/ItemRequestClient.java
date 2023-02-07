@@ -7,13 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-
-
-
-import shareit.user.model.User;
 import shareit.BaseClient;
 import shareit.item.dto.ItemDto;
 import shareit.request.dto.ItemRequestDto;
+import shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.Map;
