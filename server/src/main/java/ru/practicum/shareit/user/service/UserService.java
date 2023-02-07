@@ -52,8 +52,8 @@ public class UserService {
     }
 
     public UserDto update(long id, UserDto userDto) {
-        User existedUser = repository.findById(id).orElseThrow(() -> new NotFoundException(
-                "User with id " + id + " not exists in the DB"));
+        User existedUser = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User with id " + id + " not exists in the DB"));
         if (userDto.getEmail() == null || userDto.getEmail().isBlank()) {
             userDto.setEmail(existedUser.getEmail());
         }
@@ -71,8 +71,8 @@ public class UserService {
     }
 
     public void delete(long id) {
-        User user = repository.findById(id).orElseThrow(() -> new NotFoundException(
-                "User with id " + id + " not exists in the DB"));
+        User user = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User with id " + id + " not exists in the DB"));
         repository.delete(user);
     }
 }

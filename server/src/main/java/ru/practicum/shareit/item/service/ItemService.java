@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.time.LocalDateTime.now;
+import static java.time.LocalDateTime.ofInstant;
+
 @Service
 @Slf4j
 
@@ -142,7 +145,7 @@ public class ItemService {
     }
 
     public CommentDto addComment(long itemId, long userId, CommentDto commentDto) {
-        List<Booking> usersBookings = bookingRepository.findPastBookingsByBookerId(userId, LocalDateTime.now().toInstant(ZoneOffset.UTC));
+        List<Booking> usersBookings = bookingRepository.findPastBookingsByBookerId(userId, now().toInstant(ZoneOffset.UTC));
         Booking booking = usersBookings
                 .stream()
                 .filter(k -> k.getItem().getId() == itemId)
@@ -171,9 +174,9 @@ public class ItemService {
         List<ItemDto> itemsDto = new ArrayList<>();
         List<Long> itemIds = items.stream().map(Item::getId).collect(Collectors.toList());
         List<Booking> futureBookings = bookingRepository
-                .findFutureBookingsDistinctByItemsIdList(itemIds, LocalDateTime.now().toInstant(ZoneOffset.UTC));
+                .findFutureBookingsDistinctByItemsIdList(itemIds, now().toInstant(ZoneOffset.UTC));
         List<Booking> pastBookings = bookingRepository
-                .findPastBookingsByItemsIdList(itemIds, LocalDateTime.now().toInstant(ZoneOffset.UTC));
+                .findPastBookingsByItemsIdList(itemIds, now().toInstant(ZoneOffset.UTC));
         for (Item item : items) {
             ItemDto itemDto = ItemMapper.toItemDto(item);
             List<Booking> futureBookingsForItem = futureBookings
@@ -193,16 +196,16 @@ public class ItemService {
                 Booking nextBooking = futureBookingsForItem.get(0);
                 itemDto.setNextBooking(new BookingInfo(
                         nextBooking.getId(),
-                        LocalDateTime.ofInstant(nextBooking.getStartDateTime(), ZoneId.of("UTC")),
-                        LocalDateTime.ofInstant(nextBooking.getEndDateTime(), ZoneId.of("UTC")),
+                        ofInstant(nextBooking.getStartDateTime(), ZoneId.of("UTC")),
+                        ofInstant(nextBooking.getEndDateTime(), ZoneId.of("UTC")),
                         nextBooking.getBooker().getId()));
             }
             if (!pastBookingsForItems.isEmpty()) {
                 Booking lastBooking = pastBookingsForItems.get(pastBookingsForItems.size() - 1);
                 itemDto.setLastBooking(new BookingInfo(
                         lastBooking.getId(),
-                        LocalDateTime.ofInstant(lastBooking.getStartDateTime(), ZoneId.of("UTC")),
-                        LocalDateTime.ofInstant(lastBooking.getEndDateTime(), ZoneId.of("UTC")),
+                        ofInstant(lastBooking.getStartDateTime(), ZoneId.of("UTC")),
+                        ofInstant(lastBooking.getEndDateTime(), ZoneId.of("UTC")),
                         lastBooking.getBooker().getId()));
             }
             itemsDto.add(0, itemDto);

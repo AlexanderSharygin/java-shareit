@@ -39,11 +39,10 @@ public class RequestService {
         this.itemRequestRepository = itemRequestRepository;
         this.itemRepository = itemRepository;
     }
-
-
+    
     public ItemRequestDto create(ItemRequestDto itemRequestDto, long userId) {
-        User owner = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
-                "User with id " + userId + " not exists in the DB"));
+        User owner = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with id " + userId + " not exists in the DB"));
         ItemRequest itemRequest = ItemRequestMapper.fromItemRequestDto(itemRequestDto);
         itemRequest.setOwner(owner);
         ItemRequest resultRequest = itemRequestRepository.save(itemRequest);
@@ -52,16 +51,16 @@ public class RequestService {
     }
 
     public List<ItemRequestDto> getUserRequests(long userId) {
-        userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
-                "User with id " + userId + " not exists in the DB"));
+        userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with id " + userId + " not exists in the DB"));
         List<ItemRequest> requests = itemRequestRepository.findByOwner_IdOrderByCreateDateTimeDesc(userId);
 
         return setItemsToRequests(requests);
     }
 
     public List<ItemRequestDto> getAllRequests(long userId, int from, int size) {
-        userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
-                "User with id " + userId + " not exists in the DB"));
+        userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with id " + userId + " not exists in the DB"));
         Pageable paging = PageRequest.of(from, size);
         List<ItemRequest> requests = itemRequestRepository.findByOwner_IdNotOrderByCreateDateTimeDesc(userId, paging);
 
@@ -72,8 +71,7 @@ public class RequestService {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 "User with id " + userId + " not exists in the DB"));
         ItemRequest request = itemRequestRepository.findById(requestId)
-                .orElseThrow(() -> new NotFoundException(
-                        "Request with id " + requestId + " not exists in the DB"));
+                .orElseThrow(() -> new NotFoundException("Request with id " + requestId + " not exists in the DB"));
         List<Item> items = itemRepository.findByItemRequest_IdIn(List.of(requestId));
         ItemRequestDto requestDto = ItemRequestMapper.toItemRequestDto(request);
         List<ItemDto> itemsDto = items.stream()
