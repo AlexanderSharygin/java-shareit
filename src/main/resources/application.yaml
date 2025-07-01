@@ -24,7 +24,7 @@ spring:
     #driverClassName: org.h2.Driver
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/shareitdb
+    url: jdbc:postgresql://localhost:5432/shareit
     username: shareit
     password: shareit
     driver-class-name: org.postgresql.Driver
