@@ -14,6 +14,8 @@ spring:
         format_sql: true
         jdbc:
           time_zone: UTC
+          lob:
+            non_contextual_creation: true
 
   #datasource:
     #url: jdbc:h2:file:./db/shareit
