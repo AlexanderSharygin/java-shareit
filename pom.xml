@@ -60,7 +60,7 @@
 			<optional>true</optional>
 			<version>RELEASE</version>
 		</dependency>
-		
+
 	</dependencies>
 
 	<build>
