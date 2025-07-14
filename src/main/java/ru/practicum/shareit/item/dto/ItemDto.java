@@ -29,7 +29,7 @@ public class ItemDto {
 
     private User owner;
 
-    private ItemRequest request;
+    private Long requestId;
 
     private List<CommentDto> comments;
 

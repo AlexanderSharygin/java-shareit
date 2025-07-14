@@ -14,7 +14,9 @@ import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.comment.repository.CommentsRepository;
-import ru.practicum.shareit.item.repository.ItemsRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserService;
@@ -33,22 +35,23 @@ import static java.time.ZoneOffset.UTC;
 @Slf4j
 public class ItemService {
 
-    private final ItemsRepository itemsRepository;
+    private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentsRepository commentsRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
-
-    public ItemService(ItemsRepository itemsRepository, UserService userService, UserRepository userRepository, BookingRepository bookingRepository, CommentsRepository commentsRepository) {
-        this.itemsRepository = itemsRepository;
+    public ItemService(ItemRepository itemRepository, UserService userService, UserRepository userRepository, BookingRepository bookingRepository, CommentsRepository commentsRepository, ItemRequestRepository itemRequestRepository) {
+        this.itemRepository = itemRepository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.commentsRepository = commentsRepository;
+        this.itemRequestRepository = itemRequestRepository;
     }
 
 
     public List<ItemDto> getAll() {
-        List<Item> items = itemsRepository.findAll();
+        List<Item> items = itemRepository.findAll();
         List<ItemDto> itemsDto = items.stream().map(ItemMapper::toItemDto).toList();
         setCommentsForItems(itemsDto);
 
@@ -56,7 +59,7 @@ public class ItemService {
     }
 
     public List<ItemDto> getAllByUserId(long userId) {
-        List<Item> items = itemsRepository.findAllByOwnerId(userId);
+        List<Item> items = itemRepository.findAllByOwnerId(userId);
         List<ItemDto> itemsDto = items.stream().map(ItemMapper::toItemDto).toList();
         setCommentsForItems(itemsDto);
 
@@ -64,7 +67,7 @@ public class ItemService {
     }
 
     public ItemDto getById(long id, long userId) {
-        Item item = itemsRepository.findById(id)
+        Item item = itemRepository.findById(id)
                         .orElseThrow(() -> new NotFoundException("Item с id " + id + " не найден"));
         ItemDto result = setBookingInfo(List.of(item), userId).getFirst();
         setCommentsForItems(List.of(result));
@@ -73,7 +76,7 @@ public class ItemService {
     }
 
     public List<ItemDto> getAllByNameOrDescription(String text) {
-        return itemsRepository.findAllAvailableByNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(text, text).stream()
+        return itemRepository.findAllAvailableByNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(text, text).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
@@ -91,13 +94,20 @@ public class ItemService {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User с " + userId + " не найден"));
         itemDto.setOwner(owner);
+        ItemRequest itemRequest = null;
+        if (itemDto.getRequestId() != null) {
+            long requestId = itemDto.getRequestId();
+            itemRequest = itemRequestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new NotFoundException("Item request with id " + requestId + "is not found"));
+
+        }
         Item item = ItemMapper.fromItemDto(itemDto);
 
-        return ItemMapper.toItemDto(itemsRepository.save(item));
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
     public ItemDto update(long itemId, long userId, ItemDto itemDto) {
-        Item existedItem = itemsRepository.findById(itemId)
+        Item existedItem = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item с id " + itemId + " не найден"));
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User с " + userId + " не найден"));
@@ -120,13 +130,13 @@ public class ItemService {
         Item item = ItemMapper.fromItemDto(itemDto);
         item.setId(itemId);
 
-        return ItemMapper.toItemDto(itemsRepository.save(item));
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
     public void delete(long itemId) {
-        Item item = itemsRepository.findById(itemId)
+        Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item с id " + itemId + " не найден"));
-        itemsRepository.delete(item);
+        itemRepository.delete(item);
     }
 
     public CommentDto addComment(long itemId, long userId, CommentDto commentDto) {
@@ -140,7 +150,7 @@ public class ItemService {
         }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User с " + userId + " не найден"));
-        Item item = itemsRepository.findById(itemId)
+        Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item с id " + itemId + " не найден"));
 
         Comment comment = CommentMapper.froCommentDto(commentDto);

@@ -6,7 +6,11 @@ import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
-public interface ItemsRepository extends JpaRepository<Item, Long> {
+public interface ItemRepository extends JpaRepository<Item, Long> {
+
+    @Query("SELECT i FROM Item i WHERE i.request.id IN ?1")
+    List<Item> findByItemRequest_IdIn(List<Long> ids);
+
     List<Item> findAllByOwner_Id(Long ownerId);
 
     @Query("select i from Item i " +
