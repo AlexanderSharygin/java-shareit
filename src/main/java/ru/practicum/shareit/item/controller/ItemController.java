@@ -2,6 +2,8 @@ package ru.practicum.shareit.item.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -25,11 +27,14 @@ public class ItemController {
     }
 
     @GetMapping("/items")
-    public List<ItemDto> getItems(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
+    public List<ItemDto> getItems(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
+                                  @RequestParam(required = false, defaultValue = "0") int from,
+                                  @RequestParam(required = false, defaultValue = "100") int size)  {
+        Pageable paging = PageRequest.of(from, size);
         if (userId == null) {
             return itemService.getAll();
         } else {
-            return itemService.getAllByUserId(userId);
+            return itemService.getAllByUserId(userId, paging);
         }
     }
 
@@ -40,8 +45,11 @@ public class ItemController {
 
     @GetMapping("/items/search")
     public List<ItemDto> getItemsWithSearch(@RequestHeader(value = "X-Sharer-User-Id", required = false)
-                                            @RequestParam String text) {
-        return itemService.getAllByNameOrDescription(text);
+                                            @RequestParam String text,
+                                            @RequestParam(required = false, defaultValue = "0") int from,
+                                            @RequestParam(required = false, defaultValue = "100") int size) {
+        Pageable paging = PageRequest.of(from, size);
+        return itemService.getAllByNameOrDescription(text, paging);
     }
 
     @PostMapping(value = "/items")
@@ -56,8 +64,8 @@ public class ItemController {
     @PatchMapping(value = "/items/{id}")
     public ItemDto update(@Valid @RequestBody ItemDto itemDto, @PathVariable("id") long itemId,
                           @RequestHeader("X-Sharer-User-Id") long userId) {
-        itemService.update(itemId, userId, itemDto);
-        return itemService.getById(itemId, userId);
+
+        return  itemService.update(itemId, userId, itemDto);
     }
 
     @DeleteMapping(value = "/items/{id}")

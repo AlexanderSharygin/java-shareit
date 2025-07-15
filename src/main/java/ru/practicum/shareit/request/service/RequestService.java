@@ -2,18 +2,14 @@ package ru.practicum.shareit.request.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.model.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
-
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
@@ -23,7 +19,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -46,7 +41,7 @@ public class RequestService {
 
     public ItemRequestDto create(ItemRequestDto itemRequestDto, long userId) {
         User owner = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
-                "User with id " + userId + " not exists in the DB"));
+                "User c " + userId + " не найден"));
         ItemRequest itemRequest = ItemRequestMapper.fromItemRequestDto(itemRequestDto);
         itemRequest.setOwner(owner);
         ItemRequest resultRequest = itemRequestRepository.save(itemRequest);
@@ -56,50 +51,41 @@ public class RequestService {
 
     public List<ItemRequestDto> getUserRequests(long userId) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
-                "User with id " + userId + " not exists in the DB"));
+                "User c " + userId + " не найден"));
         List<ItemRequest> requests = itemRequestRepository.findByOwner_IdOrderByCreateDateTimeDesc(userId);
 
         return setItemsToRequests(requests);
     }
 
-    public List<ItemRequestDto> getAllRequests(long userId, int from, int size) {
-        userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
-                "User with id " + userId + " not exists in the DB"));
-        Pageable paging = PageRequest.of(from, size);
+    public List<ItemRequestDto> getAllRequests(long userId, Pageable paging) {
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User с " + userId + " не найден"));
         List<ItemRequest> requests = itemRequestRepository.findByOwner_IdNotOrderByCreateDateTimeDesc(userId, paging);
 
         return setItemsToRequests(requests);
     }
 
     public ItemRequestDto getRequestById(long userId, long requestId) {
-        userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
-                "User with id " + userId + " not exists in the DB"));
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User с " + userId + " не найден"));
         ItemRequest request = itemRequestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException(
-                        "Request with id " + requestId + " not exists in the DB"));
+                        "Request c id " + requestId + " не найден"));
         List<Item> items = itemRepository.findByItemRequest_IdIn(List.of(requestId));
         ItemRequestDto requestDto = ItemRequestMapper.toItemRequestDto(request);
-        List<ItemDto> itemsDto = items.stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+        List<ItemDto> itemsDto = items.stream().map(ItemMapper::toItemDto).toList();
         requestDto.setItems(itemsDto);
 
         return requestDto;
     }
 
     private List<ItemRequestDto> setItemsToRequests(List<ItemRequest> requests) {
-        List<Long> requestsIds = requests.stream().map(ItemRequest::getId).collect(Collectors.toList());
+        List<Long> requestsIds = requests.stream().map(ItemRequest::getId).toList();
         List<Item> items = itemRepository.findByItemRequest_IdIn(requestsIds);
         List<ItemRequestDto> result = new ArrayList<>();
         for (ItemRequest request : requests) {
             ItemRequestDto requestDto = ItemRequestMapper.toItemRequestDto(request);
             List<Item> requestItems = items.stream()
-                    .filter(k -> Objects.equals(k.getRequest().getId(), request.getId()))
-                    .toList();
-            requestDto.setItems(requestItems
-                    .stream()
-                    .map(ItemMapper::toItemDto)
-                    .collect(Collectors.toList()));
+                    .filter(k -> Objects.equals(k.getRequest().getId(), request.getId())).toList();
+            requestDto.setItems(requestItems.stream().map(ItemMapper::toItemDto).toList());
             result.add(requestDto);
         }
 

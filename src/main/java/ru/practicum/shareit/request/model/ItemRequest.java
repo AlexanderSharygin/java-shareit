@@ -29,7 +29,4 @@ public class ItemRequest {
 
     @Column(name = "create_date_time")
     private Instant createDateTime;
-
-  //  @OneToOne(cascade = CascadeType.ALL, mappedBy = "request")
-  //  private Item item;
 }

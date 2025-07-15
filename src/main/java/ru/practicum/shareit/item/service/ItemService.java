@@ -1,19 +1,22 @@
 package ru.practicum.shareit.item.service;
 
+import jakarta.validation.constraints.Past;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingInfo;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exception.model.BadRequestException;
-import ru.practicum.shareit.exception.model.NotFoundException;
 import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.comment.dto.CommentMapper;
+import ru.practicum.shareit.comment.model.Comment;
+import ru.practicum.shareit.comment.repository.CommentsRepository;
+import ru.practicum.shareit.exception.model.BadRequestException;
+import ru.practicum.shareit.exception.model.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.comment.repository.CommentsRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
@@ -41,7 +44,7 @@ public class ItemService {
     private final CommentsRepository commentsRepository;
     private final ItemRequestRepository itemRequestRepository;
 
-    public ItemService(ItemRepository itemRepository, UserService userService, UserRepository userRepository, BookingRepository bookingRepository, CommentsRepository commentsRepository, ItemRequestRepository itemRequestRepository) {
+    public ItemService(ItemRepository itemRepository, UserRepository userRepository, BookingRepository bookingRepository, CommentsRepository commentsRepository, ItemRequestRepository itemRequestRepository) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
@@ -58,8 +61,8 @@ public class ItemService {
         return itemsDto;
     }
 
-    public List<ItemDto> getAllByUserId(long userId) {
-        List<Item> items = itemRepository.findAllByOwnerId(userId);
+    public List<ItemDto> getAllByUserId(long userId, Pageable paging) {
+        List<Item> items = itemRepository.findByOwner_Id(userId, paging);
         List<ItemDto> itemsDto = items.stream().map(ItemMapper::toItemDto).toList();
         setCommentsForItems(itemsDto);
 
@@ -68,15 +71,15 @@ public class ItemService {
 
     public ItemDto getById(long id, long userId) {
         Item item = itemRepository.findById(id)
-                        .orElseThrow(() -> new NotFoundException("Item с id " + id + " не найден"));
+                .orElseThrow(() -> new NotFoundException("Item с id " + id + " не найден"));
         ItemDto result = setBookingInfo(List.of(item), userId).getFirst();
         setCommentsForItems(List.of(result));
 
         return result;
     }
 
-    public List<ItemDto> getAllByNameOrDescription(String text) {
-        return itemRepository.findAllAvailableByNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(text, text).stream()
+    public List<ItemDto> getAllByNameOrDescription(String text,  Pageable paging) {
+        return itemRepository.findAllAvailableByNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(text, text, paging).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
@@ -98,11 +101,12 @@ public class ItemService {
         if (itemDto.getRequestId() != null) {
             long requestId = itemDto.getRequestId();
             itemRequest = itemRequestRepository.findById(itemDto.getRequestId())
-                    .orElseThrow(() -> new NotFoundException("Item request with id " + requestId + "is not found"));
+                    .orElseThrow(() -> new NotFoundException("Item request с id " + requestId + " не найден"));
 
         }
-        Item item = ItemMapper.fromItemDto(itemDto);
 
+        Item item = ItemMapper.fromItemDto(itemDto);
+        item.setRequest(itemRequest);
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 

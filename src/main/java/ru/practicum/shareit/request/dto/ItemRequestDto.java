@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ public class ItemRequestDto {
 
     @Length(max = 200)
 
+    @NotNull
     private String description;
 
     private LocalDateTime created;
