@@ -16,8 +16,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findByOwner_Id(Long id);
 
-    @Query("select i from Item i " +
-            "where (upper(i.name) like upper(:name) or upper(i.description) " +
-            "like upper(:description)) and i.available=true ")
-    List<Item> findAllAvailableByNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(String name, String description,  Pageable pageable);
+    @Query("SELECT i FROM Item i " +
+            "WHERE UPPER(i.name) LIKE UPPER(CONCAT('%', ?1, '%')) " +
+            "OR UPPER(i.description) LIKE UPPER(CONCAT('%', ?2, '%')) AND i.available = true")
+    List<Item> findAvailableItemsByNameOrDescription(String name, String description, Pageable pageable);
 }

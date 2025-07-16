@@ -65,7 +65,7 @@ public class ItemRepositoryTests {
         Item item = new Item(1L, "Name", "Description", true, user, itemRequest);
         item.setOwner(user);
         itemRepository.save(item);
-        List<Item> items = itemRepository.findAllAvailableByNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase("Name", "Name", null);
+        List<Item> items = itemRepository.findAvailableItemsByNameOrDescription("Name", "Name", null);
         Assertions.assertEquals(items.get(0).getId(), 1L);
         Assertions.assertEquals(items.get(0).getName(), "Name");
         Assertions.assertEquals(items.get(0).getDescription(), "Description");

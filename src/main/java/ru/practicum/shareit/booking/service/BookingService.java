@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoStatus;
@@ -15,8 +16,8 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
-import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +68,7 @@ public class BookingService {
             return bookingRepository.findFutureBookingsByBookerId(userId, now().toInstant(ZoneOffset.UTC), paging)
                     .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.PAST.toString())) {
-            return bookingRepository.findPastBookingsByBookerId(userId, now().toInstant(ZoneOffset.UTC),paging)
+            return bookingRepository.findPastBookingsByBookerId(userId, now().toInstant(ZoneOffset.UTC), paging)
                     .stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
         } else if (status.equals(BookingDtoStatus.CURRENT.toString())) {
             return bookingRepository.findCurrentBookingsByBookerId(userId, now().toInstant(ZoneOffset.UTC),
@@ -118,14 +119,17 @@ public class BookingService {
                 .orElseThrow(() -> new NotFoundException("User с id " + userId + " не найден"));
         Item item = itemRepository.findById(bookingDto.getItemId())
                 .orElseThrow(() -> new NotFoundException("Item с id " + bookingDto.getItemId() + " не найден"));
+        if (!item.getAvailable()) {
+            throw new BadRequestException("Нельзя создать бронирование для недоступной вещи");
+        }
+        if (bookingDto.getStart().isBefore(LocalDateTime.now()) || bookingDto.getEnd().isBefore(LocalDateTime.now())) {
+            throw new BadRequestException("Неверные даты начала/окончания бронирования");
+        }
         if (bookingDto.getEnd().isBefore(bookingDto.getStart()) || bookingDto.getEnd().equals(bookingDto.getStart())) {
             throw new BadRequestException("Неверные даты начала/окончания бронирования");
         }
         if (userId == item.getOwner().getId()) {
             throw new NotFoundException("Невозможно создать бронирование для собственной вещи");
-        }
-        if (!item.getAvailable()) {
-            throw new BadRequestException("Нельзя создать бронирование для недоступной вещи");
         }
         Booking booking = BookingMapper.fromBookingDto(bookingDto);
         booking.setItem(item);
@@ -144,14 +148,15 @@ public class BookingService {
         }
         if (isSetApprove && !booking.getStatus().equals(BookingStatus.APPROVED)) {
             booking.setStatus(BookingStatus.APPROVED);
-
-            return BookingMapper.toBookingDto(bookingRepository.save(booking));
+            bookingRepository.save(booking);
         } else if (!isSetApprove && !booking.getStatus().equals(BookingStatus.REJECTED)) {
             booking.setStatus(BookingStatus.REJECTED);
-
-            return BookingMapper.toBookingDto(bookingRepository.save(booking));
+            bookingRepository.save(booking);
         } else {
             throw new BadRequestException("Ошибка обновления статуса для бронирования с id " + bookingId);
         }
+
+        return BookingMapper.toBookingDto(bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Бронирование c id " + bookingId + " не найдено")));
     }
 }

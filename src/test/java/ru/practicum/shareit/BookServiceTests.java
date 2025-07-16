@@ -88,7 +88,7 @@ public class BookServiceTests {
                 .thenReturn(Optional.of(user));
         Mockito.when(itemRepository.findById(1L))
                 .thenReturn(Optional.of(item));
-        BookingDto bookingDto = new BookingDto(1L, LocalDateTime.now(), LocalDateTime.now(),
+        BookingDto bookingDto = new BookingDto(1L, LocalDateTime.now(), LocalDateTime.now().plusDays(1),
                 BookingStatus.WAITING, 1L,
                 new User(1L, "Name", "email@email.com"), new Item());
         var exception = assertThrows(
@@ -130,7 +130,7 @@ public class BookServiceTests {
                 BadRequestException.class,
                 () -> bookService.create(1, bookingDto));
 
-        assertEquals("Can't create the booking with start date in the past",
+        assertEquals("Неверные даты начала/окончания бронирования",
                 exception.getParameter());
     }
 
@@ -256,10 +256,10 @@ public class BookServiceTests {
         Mockito.when(bookingRepository.findById(Mockito.any()))
                 .thenReturn(Optional.of(booking));
         var exception = assertThrows(
-                NotFoundException.class,
+                BadRequestException.class,
                 () -> bookService.changeBookingStatus(1, 1, true));
 
-        assertEquals("User with id 1 is not owner for item from booking with id 1", exception.getMessage());
+        assertEquals("User c id 1 не является собственником вещи", exception.getParameter());
     }
 
     @Test

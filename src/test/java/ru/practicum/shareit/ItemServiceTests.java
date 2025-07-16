@@ -120,7 +120,7 @@ public class ItemServiceTests {
     @Test
     public void getItemByNameSuccessTest() {
         Pageable paging = PageRequest.of(1, 1);
-        Mockito.when(itemRepository.findAllAvailableByNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(Mockito.any(), Mockito.any(), Mockito.any()))
+        Mockito.when(itemRepository.findAvailableItemsByNameOrDescription(Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(List.of(item));
         List<ItemDto> result = itemService.getAllByNameOrDescription("Test", paging);
 

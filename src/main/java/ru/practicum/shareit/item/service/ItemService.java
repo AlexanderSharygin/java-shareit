@@ -1,7 +1,9 @@
 package ru.practicum.shareit.item.service;
 
 import jakarta.validation.constraints.Past;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -44,14 +46,17 @@ public class ItemService {
     private final CommentsRepository commentsRepository;
     private final ItemRequestRepository itemRequestRepository;
 
-    public ItemService(ItemRepository itemRepository, UserRepository userRepository, BookingRepository bookingRepository, CommentsRepository commentsRepository, ItemRequestRepository itemRequestRepository) {
+    @Autowired
+    public ItemService(ItemRepository itemRepository, UserRepository userRepository,
+                       BookingRepository bookingRepository,
+                       CommentsRepository commentsRepository,
+                       ItemRequestRepository itemRequestRepository) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.commentsRepository = commentsRepository;
         this.itemRequestRepository = itemRequestRepository;
     }
-
 
     public List<ItemDto> getAll() {
         List<Item> items = itemRepository.findAll();
@@ -79,7 +84,7 @@ public class ItemService {
     }
 
     public List<ItemDto> getAllByNameOrDescription(String text,  Pageable paging) {
-        return itemRepository.findAllAvailableByNameLikeIgnoreCaseOrDescriptionLikeIgnoreCase(text, text, paging).stream()
+        return itemRepository.findAvailableItemsByNameOrDescription(text, text, paging).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
