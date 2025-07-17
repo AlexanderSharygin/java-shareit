@@ -1,0 +1,72 @@
+package shareit.exception.controller;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import shareit.exception.model.BadRequestException;
+import shareit.exception.model.ConflictException;
+import shareit.exception.model.ErrorResponse;
+import shareit.exception.model.NotFoundException;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestControllerAdvice
+@Slf4j
+public class ExceptionApiHandler {
+
+    @ExceptionHandler(ConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse entityIsAlreadyExist(ConflictException exception) {
+        log.warn("Entity is already exist. Message: {}, StackTrace: {}", exception.getMessage(), exception.getStackTrace());
+
+        return new ErrorResponse(exception.getMessage(), "Entity is already exist!");
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse entityIsNotExist(NotFoundException exception) {
+        log.warn("Entity is not found. Message: {}, StackTrace: {}", exception.getMessage(), exception.getStackTrace());
+
+        return new ErrorResponse(exception.getMessage(), "Entity is not found!");
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse commonValidation(MethodArgumentNotValidException e) {
+        List<FieldError> items = e.getBindingResult().getFieldErrors();
+        String message = items.stream()
+                .map(FieldError::getField)
+                .findFirst()
+                .orElse("Unknown error");
+        Optional<String> title = items.stream()
+                .map(FieldError::getDefaultMessage)
+                .findFirst();
+        if (title.isPresent()) {
+            message = message + " - " + title.get();
+        }
+        log.warn(message);
+
+        return new ErrorResponse(message, "Validation error");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleOtherExceptions(final Throwable e) {
+        log.warn("Unknown error. Message: {}, StackTrace: {}", e.getMessage(), e.getStackTrace());
+
+        return new ErrorResponse(e.getMessage(), "Unknown error");
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIncorrectParameterException(final BadRequestException e) {
+        log.warn(e.getMessage());
+
+        return new ErrorResponse(e.getParameter(), "Bad request");
+    }
+}
