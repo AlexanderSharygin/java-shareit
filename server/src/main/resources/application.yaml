@@ -18,7 +18,7 @@ spring:
             non_contextual_creation: true
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/shareit
+    url: jdbc:postgresql://db:5432/shareit
     username: shareit
     password: shareit
     driver-class-name: org.postgresql.Driver
