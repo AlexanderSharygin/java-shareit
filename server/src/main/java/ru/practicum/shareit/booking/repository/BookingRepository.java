@@ -39,7 +39,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findFutureBookingsByBookerId(Long id, Instant startDateTime);
 
     @Query("select distinct b from Booking b where b.item.id in ?1 and b.startDateTime > ?2 order by b.startDateTime DESC")
-    List<Booking> findFutureBookingsDistinctByItemsIdList(Collection<Long> itemId, Instant startDateTime,  Pageable pageable);
+    List<Booking> findFutureBookingsDistinctByItemsIdList(Collection<Long> itemId, Instant startDateTime, Pageable pageable);
 
     @Query("SELECT b FROM Booking b WHERE b.booker.id = ?1 AND b.endDateTime < ?2 ORDER BY b.startDateTime DESC")
     List<Booking> findPastBookingsByBookerId(Long id, Instant startDateTime);
