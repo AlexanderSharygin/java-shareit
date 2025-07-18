@@ -1,18 +1,18 @@
 package shareit.item.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NonNull;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class CommentDto {
 
-    @NonNull
     private Long id;
 
     @Length(max = 500)
@@ -22,9 +22,5 @@ public class CommentDto {
     @Length(max = 50)
     private String authorName;
 
-    @NonNull
     private LocalDateTime created;
-
-    public CommentDto() {
-    }
 }

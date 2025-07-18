@@ -8,9 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.user.dto.UserMapper;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
 
 import java.util.List;
 
@@ -18,18 +15,16 @@ import java.util.List;
 public class ItemController {
 
     private final ItemService itemService;
-    private final UserService userService;
 
     @Autowired
-    public ItemController(ItemService itemService, UserService userService) {
+    public ItemController(ItemService itemService) {
         this.itemService = itemService;
-        this.userService = userService;
     }
 
     @GetMapping("/items")
     public List<ItemDto> getItems(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
                                   @RequestParam(required = false, defaultValue = "0") int from,
-                                  @RequestParam(required = false, defaultValue = "100") int size)  {
+                                  @RequestParam(required = false, defaultValue = "100") int size) {
         Pageable paging = PageRequest.of(from, size);
         if (userId == null) {
             return itemService.getAll();
@@ -54,9 +49,6 @@ public class ItemController {
 
     @PostMapping(value = "/items")
     public ItemDto create(@Valid @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") long userId) {
-        User owner = UserMapper.fromUserDto(userService.getById(userId));
-        owner.setId(userId);
-        itemDto.setOwner(owner);
         return itemService.create(userId, itemDto);
 
     }
@@ -65,7 +57,7 @@ public class ItemController {
     public ItemDto update(@Valid @RequestBody ItemDto itemDto, @PathVariable("id") long itemId,
                           @RequestHeader("X-Sharer-User-Id") long userId) {
 
-        return  itemService.update(itemId, userId, itemDto);
+        return itemService.update(itemId, userId, itemDto);
     }
 
     @DeleteMapping(value = "/items/{id}")

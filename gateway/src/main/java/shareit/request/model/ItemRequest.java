@@ -1,36 +1,28 @@
 package shareit.request.model;
 
+
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import shareit.user.model.User;
 
-import javax.persistence.*;
 import java.time.Instant;
 
-/**
- * TODO Sprint add-item-requests.
- */
-@Getter
-@Setter
-@ToString
-@Entity
+@Data
 @AllArgsConstructor
-@Table(name = "item_requests")
+@NoArgsConstructor
+
 public class ItemRequest {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
 
-    @ManyToOne
+
     private User owner;
+
 
     private String description;
 
-    private Instant createDateTime;
 
-    public ItemRequest() {
-    }
+    private Instant createDateTime;
 }

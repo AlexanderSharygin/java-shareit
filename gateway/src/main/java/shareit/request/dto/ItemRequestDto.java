@@ -1,8 +1,9 @@
 package shareit.request.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NonNull;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import shareit.item.dto.ItemDto;
 import shareit.user.model.User;
@@ -13,24 +14,20 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ItemRequestDto {
 
-    @NonNull
+
     private Long id;
 
-    @NonNull
     private User owner;
 
-
     @Length(max = 200)
+
+    @NotNull
     private String description;
 
-    @NonNull
     private LocalDateTime created;
 
     private List<ItemDto> items;
-
-
-    public ItemRequestDto() {
-    }
 }

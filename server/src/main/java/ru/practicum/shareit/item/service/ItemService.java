@@ -1,10 +1,7 @@
 package ru.practicum.shareit.item.service;
 
-import jakarta.validation.constraints.Past;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingInfo;
@@ -24,7 +21,6 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
-import ru.practicum.shareit.user.service.UserService;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -77,13 +73,13 @@ public class ItemService {
     public ItemDto getById(long id, long userId) {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Item с id " + id + " не найден"));
-        ItemDto result = setBookingInfo(List.of(item), userId).getFirst();
+        ItemDto result = setBookingInfo(List.of(item), userId).get(0);
         setCommentsForItems(List.of(result));
 
         return result;
     }
 
-    public List<ItemDto> getAllByNameOrDescription(String text,  Pageable paging) {
+    public List<ItemDto> getAllByNameOrDescription(String text, Pageable paging) {
         return itemRepository.findAvailableItemsByNameOrDescription(text, text, paging).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
@@ -99,8 +95,10 @@ public class ItemService {
         if (itemDto.getDescription() == null) {
             throw new BadRequestException("Поле Description является обязательным");
         }
+
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User с " + userId + " не найден"));
+        owner.setId(userId);
         itemDto.setOwner(owner);
         ItemRequest itemRequest = null;
         if (itemDto.getRequestId() != null) {
@@ -112,6 +110,7 @@ public class ItemService {
 
         Item item = ItemMapper.fromItemDto(itemDto);
         item.setRequest(itemRequest);
+
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
@@ -198,7 +197,7 @@ public class ItemService {
                 continue;
             }
             if (!futureBookingsForItem.isEmpty()) {
-                Booking nextBooking = futureBookingsForItem.getFirst();
+                Booking nextBooking = futureBookingsForItem.get(0);
                 itemDto.setNextBooking(new BookingInfo(
                         nextBooking.getId(),
                         ofInstant(nextBooking.getStartDateTime(), ZoneId.of("UTC")),
@@ -206,14 +205,14 @@ public class ItemService {
                         nextBooking.getBooker().getId()));
             }
             if (!pastBookingsForItems.isEmpty()) {
-                Booking lastBooking = pastBookingsForItems.getLast();
+                Booking lastBooking = pastBookingsForItems.get(pastBookingsForItems.size() - 1);
                 itemDto.setLastBooking(new BookingInfo(
                         lastBooking.getId(),
                         ofInstant(lastBooking.getStartDateTime(), ZoneId.of(UTC.toString())),
                         ofInstant(lastBooking.getEndDateTime(), ZoneId.of("UTC")),
                         lastBooking.getBooker().getId()));
             }
-            itemsDto.addFirst(itemDto);
+            itemsDto.add(0, itemDto);
         }
         return itemsDto;
     }

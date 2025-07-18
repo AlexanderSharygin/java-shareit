@@ -135,8 +135,8 @@ public class BookingService {
         booking.setItem(item);
         booking.setStatus(BookingStatus.WAITING);
         booking.setBooker(booker);
-
-        return BookingMapper.toBookingDto(bookingRepository.save(booking));
+        Booking bookingSaved = bookingRepository.save(booking);
+        return BookingMapper.toBookingDto(bookingSaved);
     }
 
     public BookingDto changeBookingStatus(long bookingId, long userId, boolean isSetApprove) {

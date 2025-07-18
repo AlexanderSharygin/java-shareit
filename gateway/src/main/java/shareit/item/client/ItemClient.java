@@ -24,17 +24,14 @@ public class ItemClient extends BaseClient {
         super(
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl + API_PREFIX))
-                        .requestFactory(HttpComponentsClientHttpRequestFactory::new)
+                        .requestFactory(() -> new HttpComponentsClientHttpRequestFactory())
                         .build()
         );
     }
 
-    public ResponseEntity<Object> getAll(Long userId, int from, int size) {
-        Map<String, Object> parameters = Map.of(
-                "from", from,
-                "size", size
-        );
-        return get("?from={from}&size={size}", userId, parameters);
+    public ResponseEntity<Object> getAll() {
+
+        return get("");
     }
 
     public ResponseEntity<Object> getById(long itemId, long userId) {
@@ -48,6 +45,16 @@ public class ItemClient extends BaseClient {
                 "size", size
         );
         return get("/search?text={text}&from={from}&size={size}", userId, parameters);
+    }
+
+    public ResponseEntity<Object> getAllByUserId(long userId, int from, int size) {
+        Map<String, Object> parameters = Map.of(
+                "from", from,
+                "size", size
+        );
+
+        return get("?from={from}&size={size}", userId, parameters);
+
     }
 
     public ResponseEntity<Object> create(long userId, ItemDto itemDto) {

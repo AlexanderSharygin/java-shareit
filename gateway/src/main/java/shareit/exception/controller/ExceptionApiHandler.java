@@ -13,7 +13,6 @@ import shareit.exception.model.ErrorResponse;
 import shareit.exception.model.NotFoundException;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestControllerAdvice
 @Slf4j
@@ -22,7 +21,7 @@ public class ExceptionApiHandler {
     @ExceptionHandler(ConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse entityIsAlreadyExist(ConflictException exception) {
-        log.warn("Entity is already exist. Message: {}, StackTrace: {}", exception.getMessage(), exception.getStackTrace());
+        log.warn("Entity is already exist", exception.getMessage(), exception.getStackTrace());
 
         return new ErrorResponse(exception.getMessage(), "Entity is already exist!");
     }
@@ -30,7 +29,7 @@ public class ExceptionApiHandler {
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse entityIsNotExist(NotFoundException exception) {
-        log.warn("Entity is not found. Message: {}, StackTrace: {}", exception.getMessage(), exception.getStackTrace());
+        log.warn("Entity is not found", exception.getMessage(), exception.getStackTrace());
 
         return new ErrorResponse(exception.getMessage(), "Entity is not found!");
     }
@@ -41,14 +40,10 @@ public class ExceptionApiHandler {
         List<FieldError> items = e.getBindingResult().getFieldErrors();
         String message = items.stream()
                 .map(FieldError::getField)
-                .findFirst()
-                .orElse("Unknown error");
-        Optional<String> title = items.stream()
+                .findFirst().get() + " - "
+                + items.stream()
                 .map(FieldError::getDefaultMessage)
-                .findFirst();
-        if (title.isPresent()) {
-            message = message + " - " + title.get();
-        }
+                .findFirst().get();
         log.warn(message);
 
         return new ErrorResponse(message, "Validation error");
@@ -57,16 +52,16 @@ public class ExceptionApiHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleOtherExceptions(final Throwable e) {
-        log.warn("Unknown error. Message: {}, StackTrace: {}", e.getMessage(), e.getStackTrace());
+        log.warn("Unknown error", e.getMessage(), e.getStackTrace());
 
         return new ErrorResponse(e.getMessage(), "Unknown error");
     }
 
-    @ExceptionHandler(BadRequestException.class)
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIncorrectParameterException(final BadRequestException e) {
         log.warn(e.getMessage());
 
-        return new ErrorResponse(e.getParameter(), "Bad request");
+        return new ErrorResponse(e.getMessage(), "Invalid parameter - " + e.getParameter());
     }
 }

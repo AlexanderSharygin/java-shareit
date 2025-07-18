@@ -1,8 +1,10 @@
 package shareit.booking.dto;
 
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NonNull;
+import lombok.NoArgsConstructor;
 import shareit.booking.BookingStatus;
 import shareit.item.model.Item;
 import shareit.user.model.User;
@@ -11,28 +13,24 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class BookingDto {
-    @NonNull
+
     private Long id;
 
-    @NonNull
+    @Future
+    @NotNull
     private LocalDateTime start;
 
-    @NonNull
+    @Future
+    @NotNull
     private LocalDateTime end;
 
-    @NonNull
     private BookingStatus status;
 
-    @NonNull
     private Long itemId;
 
-    @NonNull
     private User booker;
 
-    @NonNull
     private Item item;
-
-    public BookingDto() {
-    }
 }

@@ -124,7 +124,7 @@ public class ItemServiceTests {
                 .thenReturn(List.of(item));
         List<ItemDto> result = itemService.getAllByNameOrDescription("Test", paging);
 
-        assertEquals(1L, result.getFirst().getId());
+        assertEquals(1L, result.get(0).getId());
     }
 
     @Test

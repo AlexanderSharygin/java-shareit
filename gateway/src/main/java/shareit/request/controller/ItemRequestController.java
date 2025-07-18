@@ -1,12 +1,10 @@
 package shareit.request.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import shareit.exception.model.BadRequestException;
 import shareit.request.client.ItemRequestClient;
 import shareit.request.dto.ItemRequestDto;
-
-import javax.validation.Valid;
 
 
 @RestController
@@ -17,13 +15,10 @@ public class ItemRequestController {
         this.itemRequestClient = itemRequestClient;
     }
 
-    @PostMapping(value = "/requests")
-    public ResponseEntity<Object> create(@Valid @RequestBody ItemRequestDto itemRequestDto,
-                                         @RequestHeader("X-Sharer-User-Id") long userId) {
-        if (itemRequestDto.getDescription() == null) {
-            throw new BadRequestException("Description can't be null");
-        }
 
+    @PostMapping(value = "/requests")
+    public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") long userId,
+                                         @Valid @RequestBody ItemRequestDto itemRequestDto) {
         return itemRequestClient.create(itemRequestDto, userId);
     }
 
