@@ -44,7 +44,7 @@ public class BookingController {
     public List<BookingDto> getBookingsForUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                @RequestParam(required = false, defaultValue = "ALL") String state,
                                                @RequestParam(required = false, defaultValue = "0") int from,
-                                               @RequestParam(required = false, defaultValue = "100") int size ) {
+                                               @RequestParam(required = false, defaultValue = "100") int size) {
         if (from < 0 || size < 0) {
             throw new BadRequestException("Неверные параметры пагинации");
         }
@@ -57,7 +57,7 @@ public class BookingController {
     public List<BookingDto> getBookingsForUserItems(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                     @RequestParam(required = false, defaultValue = "ALL") String state,
                                                     @RequestParam(required = false, defaultValue = "0") int from,
-                                                    @RequestParam(required = false, defaultValue = "100") int size ) {
+                                                    @RequestParam(required = false, defaultValue = "100") int size) {
         if (from < 0 || size < 0) {
             throw new BadRequestException("Неверные параметры пагинации");
         }
