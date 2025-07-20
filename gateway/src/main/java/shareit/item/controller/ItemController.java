@@ -7,6 +7,8 @@ import shareit.item.client.ItemClient;
 import shareit.item.dto.CommentDto;
 import shareit.item.dto.ItemDto;
 
+import static shareit.base.Constants.USER_ID_REQUEST_HEADER_NAME;
+
 
 @RestController
 public class ItemController {
@@ -18,7 +20,7 @@ public class ItemController {
     }
 
     @GetMapping("/items")
-    public ResponseEntity<Object> getItems(@RequestHeader(value = "USER_ID_REQUEST_HEADER_NAME", required = false) Long userId,
+    public ResponseEntity<Object> getItems(@RequestHeader(value = USER_ID_REQUEST_HEADER_NAME, required = false) Long userId,
                                            @RequestParam(required = false, defaultValue = "0") int from,
                                            @RequestParam(required = false, defaultValue = "100") int size) {
         if (userId == null) {
@@ -29,12 +31,12 @@ public class ItemController {
     }
 
     @GetMapping("/items/{id}")
-    public ResponseEntity<Object> getItemById(@PathVariable("id") long itemId, @RequestHeader("USER_ID_REQUEST_HEADER_NAME") long userId) {
+    public ResponseEntity<Object> getItemById(@PathVariable("id") long itemId, @RequestHeader(USER_ID_REQUEST_HEADER_NAME) long userId) {
         return itemClient.getById(itemId, userId);
     }
 
     @GetMapping("/items/search")
-    public ResponseEntity<Object> getItemsWithSearch(@RequestHeader(value = "USER_ID_REQUEST_HEADER_NAME", required = false) long userId,
+    public ResponseEntity<Object> getItemsWithSearch(@RequestHeader(value = USER_ID_REQUEST_HEADER_NAME, required = false) long userId,
                                                      @RequestParam String text,
                                                      @RequestParam(required = false, defaultValue = "0") int from,
                                                      @RequestParam(required = false, defaultValue = "100") int size) {
@@ -42,14 +44,14 @@ public class ItemController {
     }
 
     @PostMapping(value = "/items")
-    public ResponseEntity<Object> create(@Valid @RequestBody ItemDto itemDto, @RequestHeader("USER_ID_REQUEST_HEADER_NAME") long userId) {
+    public ResponseEntity<Object> create(@Valid @RequestBody ItemDto itemDto, @RequestHeader(USER_ID_REQUEST_HEADER_NAME) long userId) {
         return itemClient.create(userId, itemDto);
 
     }
 
     @PatchMapping(value = "/items/{id}")
     public ResponseEntity<Object> update(@Valid @RequestBody ItemDto itemDto, @PathVariable("id") long itemId,
-                                         @RequestHeader("USER_ID_REQUEST_HEADER_NAME") long userId) {
+                                         @RequestHeader(USER_ID_REQUEST_HEADER_NAME) long userId) {
 
         return itemClient.update(itemId, userId, itemDto);
     }
@@ -57,7 +59,7 @@ public class ItemController {
     @PostMapping(value = "/items/{id}/comment")
     public ResponseEntity<Object> addComment(@Valid @RequestBody CommentDto commentDto,
                                              @PathVariable("id") Long itemId,
-                                             @RequestHeader("USER_ID_REQUEST_HEADER_NAME") Long userId) {
+                                             @RequestHeader(USER_ID_REQUEST_HEADER_NAME) Long userId) {
         return itemClient.addComment(itemId, userId, commentDto);
     }
 
