@@ -10,6 +10,8 @@ import ru.practicum.shareit.request.service.RequestService;
 
 import java.util.List;
 
+import static ru.practicum.shareit.base.Constants.USER_ID_REQUEST_HEADER_NAME;
+
 
 @RestController
 public class ItemRequestController {
@@ -21,18 +23,18 @@ public class ItemRequestController {
     }
 
     @PostMapping(value = "/requests")
-    public ItemRequestDto create(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemRequestDto create(@RequestHeader(USER_ID_REQUEST_HEADER_NAME) long userId,
                                  @Valid @RequestBody ItemRequestDto itemRequestDto) {
         return requestService.create(itemRequestDto, userId);
     }
 
     @GetMapping(value = "/requests")
-    public List<ItemRequestDto> getUserRequestsWithResponses(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemRequestDto> getUserRequestsWithResponses(@RequestHeader(USER_ID_REQUEST_HEADER_NAME) long userId) {
         return requestService.getUserRequests(userId);
     }
 
     @GetMapping(value = "/requests/all")
-    public List<ItemRequestDto> getAllRequestsWithResponses(@RequestHeader("X-Sharer-User-Id") long userId,
+    public List<ItemRequestDto> getAllRequestsWithResponses(@RequestHeader(USER_ID_REQUEST_HEADER_NAME) long userId,
                                                             @RequestParam(required = false, defaultValue = "0") int from,
                                                             @RequestParam(required = false, defaultValue = "100") int size) {
         Pageable paging = PageRequest.of(from, size);
@@ -41,7 +43,7 @@ public class ItemRequestController {
     }
 
     @GetMapping(value = "/requests/{id}")
-    public ItemRequestDto getRequestWithResponsesById(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemRequestDto getRequestWithResponsesById(@RequestHeader(USER_ID_REQUEST_HEADER_NAME) long userId,
                                                       @PathVariable("id") long requestId) {
         return requestService.getRequestById(userId, requestId);
     }

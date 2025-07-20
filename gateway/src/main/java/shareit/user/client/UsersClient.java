@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-import shareit.BaseClient;
+import shareit.base.BaseClient;
 import shareit.user.dto.UserDto;
 
 @Service

@@ -29,6 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.base.Constants.USER_ID_REQUEST_HEADER_NAME;
 
 @WebMvcTest(controllers = ItemRequestController.class)
 public class ItemRequestControllerTests {
@@ -53,7 +54,7 @@ public class ItemRequestControllerTests {
                 .thenReturn(itemRequestDto);
 
         mvc.perform(post("/requests")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .content(mapper.writeValueAsString(itemRequestDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -71,7 +72,7 @@ public class ItemRequestControllerTests {
                 .thenThrow(new BadRequestException("Description can't be null"));
 
         mvc.perform(post("/requests")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .content(mapper.writeValueAsString(itemRequestDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -89,7 +90,7 @@ public class ItemRequestControllerTests {
                 .thenReturn(List.of(itemRequestDto, itemRequestDto2));
 
         mvc.perform(get("/requests")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -106,7 +107,7 @@ public class ItemRequestControllerTests {
                 .thenThrow(new NotFoundException("User with id 99 not exists in the DB"));
 
         mvc.perform(get("/requests")
-                        .header("X-Sharer-User-Id", 99)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 99)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -124,7 +125,7 @@ public class ItemRequestControllerTests {
                 .thenReturn(List.of(itemRequestDto, itemRequestDto2));
 
         mvc.perform(get("/requests/all")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -142,7 +143,7 @@ public class ItemRequestControllerTests {
                 .thenThrow(new NotFoundException("User with id 99 not exists in the DB"));
 
         mvc.perform(get("/requests/all")
-                        .header("X-Sharer-User-Id", 99)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 99)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -158,7 +159,7 @@ public class ItemRequestControllerTests {
                 .thenReturn(itemRequestDto);
 
         mvc.perform(get("/requests/1")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -173,7 +174,7 @@ public class ItemRequestControllerTests {
                 .thenThrow(new NotFoundException("User with id 99 not exists in the DB"));
 
         mvc.perform(get("/requests/1")
-                        .header("X-Sharer-User-Id", 99)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 99)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

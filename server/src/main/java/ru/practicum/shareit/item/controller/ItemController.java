@@ -11,6 +11,8 @@ import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;
 
+import static ru.practicum.shareit.base.Constants.USER_ID_REQUEST_HEADER_NAME;
+
 @RestController
 public class ItemController {
 
@@ -22,7 +24,7 @@ public class ItemController {
     }
 
     @GetMapping("/items")
-    public List<ItemDto> getItems(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
+    public List<ItemDto> getItems(@RequestHeader(value = USER_ID_REQUEST_HEADER_NAME, required = false) Long userId,
                                   @RequestParam(required = false, defaultValue = "0") int from,
                                   @RequestParam(required = false, defaultValue = "100") int size) {
         Pageable paging = PageRequest.of(from, size);
@@ -34,12 +36,12 @@ public class ItemController {
     }
 
     @GetMapping("/items/{id}")
-    public ItemDto getItemById(@PathVariable("id") long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
+    public ItemDto getItemById(@PathVariable("id") long itemId, @RequestHeader(USER_ID_REQUEST_HEADER_NAME) long userId) {
         return itemService.getById(itemId, userId);
     }
 
     @GetMapping("/items/search")
-    public List<ItemDto> getItemsWithSearch(@RequestHeader(value = "X-Sharer-User-Id", required = false)
+    public List<ItemDto> getItemsWithSearch(@RequestHeader(value = USER_ID_REQUEST_HEADER_NAME, required = false)
                                             @RequestParam String text,
                                             @RequestParam(required = false, defaultValue = "0") int from,
                                             @RequestParam(required = false, defaultValue = "100") int size) {
@@ -48,14 +50,14 @@ public class ItemController {
     }
 
     @PostMapping(value = "/items")
-    public ItemDto create(@Valid @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") long userId) {
+    public ItemDto create(@Valid @RequestBody ItemDto itemDto, @RequestHeader(USER_ID_REQUEST_HEADER_NAME) long userId) {
         return itemService.create(userId, itemDto);
 
     }
 
     @PatchMapping(value = "/items/{id}")
     public ItemDto update(@Valid @RequestBody ItemDto itemDto, @PathVariable("id") long itemId,
-                          @RequestHeader("X-Sharer-User-Id") long userId) {
+                          @RequestHeader(USER_ID_REQUEST_HEADER_NAME) long userId) {
 
         return itemService.update(itemId, userId, itemDto);
     }
@@ -68,7 +70,7 @@ public class ItemController {
     @PostMapping(value = "/items/{id}/comment")
     public CommentDto addComment(@Valid @RequestBody CommentDto commentDto,
                                  @PathVariable("id") Long itemId,
-                                 @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                 @RequestHeader(USER_ID_REQUEST_HEADER_NAME) Long userId) {
         return itemService.addComment(itemId, userId, commentDto);
     }
 }

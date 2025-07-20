@@ -11,6 +11,8 @@ import ru.practicum.shareit.exception.model.BadRequestException;
 
 import java.util.List;
 
+import static ru.practicum.shareit.base.Constants.USER_ID_REQUEST_HEADER_NAME;
+
 @RestController
 public class BookingController {
 
@@ -23,25 +25,25 @@ public class BookingController {
 
     @PostMapping(value = "/bookings")
     public BookingDto create(@Valid @RequestBody BookingDto bookingDto,
-                             @RequestHeader("X-Sharer-User-Id") long userId) {
+                             @RequestHeader(USER_ID_REQUEST_HEADER_NAME) long userId) {
         return bookingService.create(userId, bookingDto);
     }
 
     @PatchMapping("/bookings/{id}")
     public BookingDto changeBookingStatus(@PathVariable("id") Long bookingId,
-                                          @RequestHeader("X-Sharer-User-Id") long userId,
+                                          @RequestHeader(USER_ID_REQUEST_HEADER_NAME) long userId,
                                           @RequestParam Boolean approved) {
         return bookingService.changeBookingStatus(bookingId, userId, approved);
     }
 
     @GetMapping("/bookings/{id}")
-    public BookingDto getBooking(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
+    public BookingDto getBooking(@RequestHeader(value = USER_ID_REQUEST_HEADER_NAME, required = false) Long userId,
                                  @PathVariable("id") Long bookingId) {
         return bookingService.getById(bookingId, userId);
     }
 
     @GetMapping("/bookings")
-    public List<BookingDto> getBookingsForUser(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<BookingDto> getBookingsForUser(@RequestHeader(USER_ID_REQUEST_HEADER_NAME) Long userId,
                                                @RequestParam(required = false, defaultValue = "ALL") String state,
                                                @RequestParam(required = false, defaultValue = "0") int from,
                                                @RequestParam(required = false, defaultValue = "100") int size) {
@@ -54,7 +56,7 @@ public class BookingController {
     }
 
     @GetMapping("/bookings/owner")
-    public List<BookingDto> getBookingsForUserItems(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<BookingDto> getBookingsForUserItems(@RequestHeader(USER_ID_REQUEST_HEADER_NAME) Long userId,
                                                     @RequestParam(required = false, defaultValue = "ALL") String state,
                                                     @RequestParam(required = false, defaultValue = "0") int from,
                                                     @RequestParam(required = false, defaultValue = "100") int size) {

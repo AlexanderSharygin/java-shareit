@@ -21,25 +21,25 @@ public class BookingController {
 
     @PostMapping(value = "/bookings")
     public ResponseEntity<Object> create(@Valid @RequestBody BookingDto bookingDto,
-                                         @RequestHeader("X-Sharer-User-Id") long userId) {
+                                         @RequestHeader("USER_ID_REQUEST_HEADER_NAME") long userId) {
         return bookingClient.create(userId, bookingDto);
     }
 
     @PatchMapping("/bookings/{id}")
     public ResponseEntity<Object> changeBookingStatus(@PathVariable("id") Long bookingId,
-                                                      @RequestHeader("X-Sharer-User-Id") long userId,
+                                                      @RequestHeader("USER_ID_REQUEST_HEADER_NAME") long userId,
                                                       @RequestParam Boolean approved) {
         return bookingClient.changeBookingStatus(bookingId, userId, approved);
     }
 
     @GetMapping("/bookings/{id}")
-    public ResponseEntity<Object> getBooking(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
+    public ResponseEntity<Object> getBooking(@RequestHeader(value = "USER_ID_REQUEST_HEADER_NAME", required = false) Long userId,
                                              @PathVariable("id") Long bookingId) {
         return bookingClient.getById(userId,bookingId);
     }
 
     @GetMapping("/bookings")
-    public ResponseEntity<Object> getBookingsForUser(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> getBookingsForUser(@RequestHeader("USER_ID_REQUEST_HEADER_NAME") Long userId,
                                                      @RequestParam(required = false, defaultValue = "ALL") String state,
                                                      @RequestParam(required = false, defaultValue = "0") int from,
                                                      @RequestParam(required = false, defaultValue = "100") int size) {
@@ -50,7 +50,7 @@ public class BookingController {
     }
 
     @GetMapping("/bookings/owner")
-    public ResponseEntity<Object> getBookingsForUserItems(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> getBookingsForUserItems(@RequestHeader("USER_ID_REQUEST_HEADER_NAME") Long userId,
                                                           @RequestParam(required = false, defaultValue = "ALL") String state,
                                                           @RequestParam(required = false, defaultValue = "0") int from,
                                                           @RequestParam(required = false, defaultValue = "100") int size) {

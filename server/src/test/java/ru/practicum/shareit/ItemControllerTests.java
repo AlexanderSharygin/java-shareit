@@ -31,6 +31,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.base.Constants.USER_ID_REQUEST_HEADER_NAME;
 
 @WebMvcTest(controllers = ItemController.class)
 public class ItemControllerTests {
@@ -80,7 +81,7 @@ public class ItemControllerTests {
 
         mvc.perform(get("/items/1")
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is(itemDto.getName())))
@@ -95,7 +96,7 @@ public class ItemControllerTests {
 
         mvc.perform(get("/items/1")
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error", is("Item with id 1 not exists in the DB")));
@@ -113,7 +114,7 @@ public class ItemControllerTests {
 
         mvc.perform(get("/items/search?text=name")
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name", is(itemDto.getName())))
@@ -130,7 +131,7 @@ public class ItemControllerTests {
                 .thenReturn(itemDto);
         when(userService.getById(anyLong())).thenReturn(UserMapper.toUserDto(user));
         mvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .content(mapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -152,7 +153,7 @@ public class ItemControllerTests {
         when(userService.getById(anyLong())).thenReturn(UserMapper.toUserDto(user));
 
         mvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .content(mapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -170,7 +171,7 @@ public class ItemControllerTests {
                 .thenReturn(itemDto);
 
         mvc.perform(patch("/items/1")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .content(mapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -190,7 +191,7 @@ public class ItemControllerTests {
                 .thenThrow(new NotFoundException("User with id 1 not exists in the DB"));
 
         mvc.perform(patch("/items/1")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .content(mapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -206,7 +207,7 @@ public class ItemControllerTests {
                 .thenReturn(comment);
 
         mvc.perform(post("/items/1/comment")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .content(mapper.writeValueAsString(comment))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -221,7 +222,7 @@ public class ItemControllerTests {
                 .thenThrow(new BadRequestException("User with id 1 can't left the comment for booking with id 1"));
 
         mvc.perform(post("/items/1/comment")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .content(mapper.writeValueAsString(comment))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)

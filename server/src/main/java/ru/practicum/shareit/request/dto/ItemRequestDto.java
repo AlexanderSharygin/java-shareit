@@ -17,7 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 public class ItemRequestDto {
 
-
     private Long id;
 
     private User owner;

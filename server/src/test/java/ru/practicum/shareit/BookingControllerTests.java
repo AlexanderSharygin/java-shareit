@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.base.Constants.USER_ID_REQUEST_HEADER_NAME;
 
 @WebMvcTest(controllers = BookingController.class)
 public class BookingControllerTests {
@@ -59,7 +60,7 @@ public class BookingControllerTests {
 
         mvc.perform(get("/bookings")
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].itemId", is(bookingDto.getItemId().intValue())))
@@ -74,7 +75,7 @@ public class BookingControllerTests {
 
         mvc.perform(get("/bookings")
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error", is("Item with id 1 not exists in the DB")));
@@ -91,7 +92,7 @@ public class BookingControllerTests {
 
         mvc.perform(get("/bookings/1")
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.itemId", is(bookingDto.getItemId().intValue())));
@@ -104,7 +105,7 @@ public class BookingControllerTests {
 
         mvc.perform(get("/bookings/1")
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error", is("User with id 1 not exists in the DB")));
@@ -124,7 +125,7 @@ public class BookingControllerTests {
 
         mvc.perform(get("/bookings/owner")
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].itemId", is(bookingDto.getItemId().intValue())))
@@ -139,7 +140,7 @@ public class BookingControllerTests {
 
         mvc.perform(get("/bookings/owner")
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error", is("Item with id 1 not exists in the DB")));
@@ -155,7 +156,7 @@ public class BookingControllerTests {
                 .thenReturn(bookingDto);
 
         mvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .content(mapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -174,7 +175,7 @@ public class BookingControllerTests {
                 .thenThrow(new NotFoundException("User with id 1 not exists in the DB"));
 
         mvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .content(mapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -193,7 +194,7 @@ public class BookingControllerTests {
                 .thenReturn(bookingDto);
 
         mvc.perform(patch("/bookings/1?approved=true")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -206,7 +207,7 @@ public class BookingControllerTests {
                 .thenThrow(new NotFoundException("User with id 1 not exists in the DB"));
 
         mvc.perform(patch("/bookings/1?approved=true")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(USER_ID_REQUEST_HEADER_NAME, 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
